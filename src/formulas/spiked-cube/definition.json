@@ -1,0 +1,54 @@
+{
+  "id": "spiked-cube",
+  "name": "SPIKED CUBE IFS V1.0",
+  "contract": "genle-formula-v1",
+  "attribution": "User-supplied gemini_01.txt; source.osl retains original header.",
+  "entryPoint": "evaluateFormula",
+  "uniformLayout": "spiked-cube-packed-v1",
+  "requiresIntegrationAdapter": true,
+  "uniforms": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "SC0",
+    "SC1",
+    "SC2"
+  ],
+  "files": {
+    "kernel": "kernel.glsl",
+    "parameters": "parameters.js",
+    "animation": "animation.js",
+    "uniforms": "uniforms.js"
+  },
+  "animationOutputs": [
+    {
+      "index": 0,
+      "name": "TwistAngle",
+      "type": "float",
+      "unit": "deg",
+      "period": 360
+    },
+    {
+      "index": 1,
+      "name": "ObjectYaw",
+      "type": "float",
+      "unit": "rad",
+      "period": 6.283185307179586
+    }
+  ],
+  "hiddenParameters": [
+    "TwistAngle",
+    "TwistLoop"
+  ],
+  "presentation": {
+    "showTwistControls": false,
+    "showTwistTelemetry": true,
+    "showTimeline": true
+  }
+}

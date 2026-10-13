@@ -5,7 +5,7 @@
 web
 
 ## Stack
-Dependency-free static HTML/CSS/JavaScript with WebGL. The studio uses standalone uber.css and locally hosted JetBrains Mono.
+Dependency-free static HTML/CSS/JavaScript with WebGL. Source modules live in src; Node builds the static dist output. Formula kernels and GPU utilities are shared while studio/node compatibility profiles remain distinct. The studio uses locally hosted JetBrains Mono.
 
 ## Users
 People exploring procedural forms, tuning geometry, lights and materials, and saving views.
@@ -19,7 +19,7 @@ genle_fractal is an independent real-time procedural studio. The live form takes
 - Chinese/English covers static controls, accessibility labels and dynamic status. Language persists in genle-fractal-language.
 - User preset names remain verbatim. Newly saved unnamed presets receive a name in the active language.
 - Preserve uber-user-presets-v1. Local preset switching uses a 0.8-second eased transition while animation continues.
-- Default opening: fine quality and 20-second fixed dual-phase animation. Scrubbing pauses playback; ultra quality is a still-work mode.
+- Default opening: enhanced quality on phones, fine on desktop, adaptive rendering off, and a 20-second fixed dual-phase animation. Ultra quality is a still-work mode.
 - Browser WebGL uses finite ray marching; it is not Octane path tracing. Speed and WebM availability depend on browser/device.
 - GitHub Pages deployment publishes the static files in `dist`; custom domain: `art.genle.cc`.
 

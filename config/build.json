@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "formula": "uber-bulb",
+  "output": "dist",
+  "bundles": {
+    "uber.js": [
+      "{studio-formulas}",
+      "src/renderer/webgl-device.js",
+      "src/renderer/uniforms.js",
+      "src/renderer/render-budget.js",
+      "src/renderer/parameters.js",
+      "src/state/camera-parameters.js",
+      "src/ui/studio/parameter-groups.js",
+      "src/ui/studio/parameter-controls.js",
+      "src/state/studio-session.js",
+      "src/ui/studio/parameter-bindings.js",
+      "src/ui/studio/light-control.js",
+      "src/ui/studio/formula-control.js",
+      "src/state/studio-presets.js",
+      "src/ui/studio/render-adapter.js",
+      "src/ui/studio/telemetry.js",
+      "src/ui/studio/render-loop.js",
+      "src/ui/studio/transport.js",
+      "src/state/studio-file-io.js",
+      "src/ui/studio/fullscreen.js",
+      "src/ui/studio/quality-control.js",
+      "src/state/studio-camera-input.js",
+      "src/state/studio-recording.js",
+      "src/ui/studio/bootstrap.js",
+      "src/ui/studio/i18n-theme.js"
+    ],
+    "nodes.js": [
+      "{formula}/parameters.js",
+      "src/ui/nodes/editor.js"
+    ],
+    "node-engine.js": [
+      "{formula}/parameters.js",
+      "{formula}/animation.js",
+      "{formula}/uniforms.js",
+      "src/renderer/webgl-device.js",
+      "src/renderer/uniforms.js",
+      "src/renderer/profiles/node-legacy/parameters.js",
+      "src/state/camera-parameters.js",
+      "src/ui/nodes/parameter-groups.js",
+      "src/ui/nodes/parameter-controls.js",
+      "src/state/node-session.js",
+      "src/ui/nodes/parameter-bindings.js",
+      "src/ui/nodes/light-control.js",
+      "src/ui/nodes/render-adapter.js",
+      "src/ui/nodes/telemetry.js",
+      "src/ui/nodes/render-loop.js",
+      "src/ui/nodes/transport.js",
+      "src/state/node-file-io.js",
+      "src/ui/nodes/quality-control.js",
+      "src/state/node-camera-input.js",
+      "src/state/node-recording.js",
+      "src/ui/nodes/bootstrap.js",
+      "src/ui/nodes/renderer-api.js"
+    ]
+  },
+  "shaders": {
+    "uber.glsl": [
+      "src/renderer/profiles/studio/prologue.glsl",
+      "src/renderer/shaders/rotation.glsl",
+      "{formula}/kernel.glsl",
+      "src/renderer/shaders/surface.glsl",
+      "src/renderer/shaders/lighting-math.glsl",
+      "src/renderer/profiles/studio/surface.glsl"
+    ],
+    "node-uber.glsl": [
+      "src/renderer/profiles/node-legacy/prologue.glsl",
+      "src/renderer/shaders/rotation.glsl",
+      "{formula}/kernel.glsl",
+      "src/renderer/shaders/surface.glsl",
+      "src/renderer/shaders/lighting-math.glsl",
+      "src/renderer/profiles/node-legacy/surface.glsl"
+    ],
+    "spiked-cube.glsl": [
+      "src/renderer/profiles/studio/prologue.glsl",
+      "src/renderer/shaders/rotation.glsl",
+      "src/formulas/spiked-cube/kernel.glsl",
+      "src/renderer/shaders/surface.glsl",
+      "src/renderer/shaders/lighting-math.glsl",
+      "src/renderer/profiles/studio/surface.glsl"
+    ]
+  },
+  "copies": {
+    "index.html": "src/ui/studio/index.html",
+    "uber.css": "src/ui/studio/styles.css",
+    "node-bridge.js": "src/ui/nodes/bridge.js",
+    "nodes.html": "src/ui/nodes/index.html",
+    "nodes.css": "src/ui/nodes/styles.css",
+    "node-render.html": "src/ui/nodes/render.html",
+    "node-render.css": "src/ui/nodes/render.css",
+    "gallery.html": "src/ui/gallery/index.html",
+    "app.js": "src/ui/gallery/app.js",
+    "style.css": "src/ui/gallery/styles.css",
+    "fragment.glsl": "src/ui/gallery/fragment.glsl"
+  },
+  "obsolete": [
+    "uber.html",
+    "studio-ui.js",
+    "render-budget.js"
+  ],
+  "studioFormulas": [
+    "uber-bulb",
+    "spiked-cube"
+  ],
+  "studioDefaults": {
+    "uber-bulb": {
+      "camera": {
+        "yaw": 0.8,
+        "pitch": 0.65,
+        "distance": 10.5,
+        "roll": -35
+      },
+      "parameters": {}
+    },
+    "spiked-cube": {
+      "camera": {
+        "yaw": 0.8,
+        "pitch": 0.5,
+        "distance": 28,
+        "roll": 0
+      },
+      "parameters": {
+        "Bounds": 10,
+        "DetailPrecision": 0.1,
+        "NormalFilter": 0.5
+      },
+      "zoomMax": 120
+    }
+  }
+}

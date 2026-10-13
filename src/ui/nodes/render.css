@@ -1,0 +1,6 @@
+
+html,body{width:100%;height:100%;overflow:hidden;margin:0;background:#000;}
+body>header,body>footer,.studio-heading,.studio-panel,.transport,.timeline,.phase-values,.clip-control,.export-actions,.port-notes{display:none!important;}
+main.studio{display:block;width:100%;height:100%;padding:0;margin:0;}.workbench{height:100%;}.studio-stage{height:100%;min-height:0;width:100%;margin:0;border:0;}.studio-caption{display:none;}.studio-overlay{inset:14px;align-items:flex-start;}.view-actions{display:none!important;}#uber-canvas{width:100%;height:100%;}
+
+.studio-overlay{display:none!important;}

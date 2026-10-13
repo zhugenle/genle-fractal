@@ -1,0 +1,7 @@
+$('play').onclick=()=>{if(!ready)return;playing=!playing;updateTransport();};$('easing').onchange=e=>{easing=e.target.value;dirty=true;};$('motion').onchange=e=>{motion=e.target.value;progress=0;dirty=true;updateTransport();};$('duration').onchange=e=>{duration=Math.max(1,Math.min(60,Number(e.target.value)||20));e.target.value=duration;updateTransport();};$('timeline').oninput=e=>{playing=false;progress=Number(e.target.value);dirty=true;updateTransport();};$('rewind').onclick=()=>{progress=0;dirty=true;updateTransport();};$('view-reset').onclick=()=>{yaw=0;pitch=.04;distance=4.62/values.AbsoluteScale;dirty=true;};
+$('view-reference').onclick=()=>{yaw=.8;pitch=.65;distance=10.5;values.CameraRoll=-35;sync();dirty=true;};
+for(const [id,angle] of [['view-top',Math.PI/2],['view-bottom',-Math.PI/2]])$(id).onclick=()=>{pitch=angle;values.CameraRoll=0;sync();dirty=true;};
+$('view-clip').oninput=e=>change('ViewClip',Number(e.target.value));$('clip-reset').onclick=()=>change('ViewClip',0);
+$('defaults').onclick=()=>gifButton.onclick();
+const gifButton=document.createElement('button');gifButton.textContent='GIF 动画预设';gifButton.onclick=()=>{restoreStudioOpening();fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;sync();dirty=true;updateTransport();};$('preset-file').before(gifButton);
+$('reference-toggle').onclick=()=>{const visible=$('reference-panel').hidden;$('reference-panel').hidden=!visible;$('reference-toggle').setAttribute('aria-expanded',String(visible));};

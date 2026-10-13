@@ -1,0 +1,15 @@
+{
+  "name": "genle-fractal",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "check:dist": "node scripts/build.mjs --check",
+    "dev": "node scripts/dev.mjs",
+    "preview": "node scripts/dev.mjs --preview",
+    "release:check": "node scripts/check.mjs && node scripts/build.mjs --check"
+  }
+}

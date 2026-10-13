@@ -1,0 +1,148 @@
+/*Formula:"SPIKED CUBE IFS" V1.0
+Spiky Hard-Surface Fractal for Octane Vectron
+Compatible with Octane Render OSL Geometry SDF
+-----------------------------------------------------------------------------
+*/
+#include "octane-oslintrin.h"
+#define mat4 matrix
+#define inout output
+
+// --------------------------------------- coloring --------------------------------------------------
+#define UV_MODE_SQRT 0
+#define UV_MODE_LOG 1
+#define UV_MODE_CONST 2
+#define UV_MODE_NONE 3
+
+#define ADD_COLOR_PARAMS int ColorIterations = 16 [[ float min=1, float max=100 ]], int UMode = UV_MODE_SQRT, float UScale = 1.0 [[ float min=0, float max=10 ]], int VMode = UV_MODE_SQRT, float VScale = 2.0 [[ float min=0, float max=10 ]]
+#define INIT_ORBIT_TRAP float orbitTrap = 10000.0
+#define APPLY_ORBIT_TRAP         if(UMode==UV_MODE_SQRT)  \
+          c.u = sqrt(orbitTrap) * UScale; \
+        else if(UMode==UV_MODE_LOG)  \
+          c.u = log(orbitTrap) * UScale; \
+        else if(UMode==UV_MODE_CONST) \
+          c.u = UScale; \
+        if(VMode==UV_MODE_SQRT)  \
+          c.v = sqrt(orbitTrap) * VScale; \
+        else if(VMode==UV_MODE_LOG)  \
+          c.v = log(orbitTrap) * VScale;\
+        else if(VMode==UV_MODE_CONST)\
+          c.v = VScale
+
+shader OslGeometry(
+    float AbsoluteX = 0.0 [[ float min=-10.0, float max=10.0 ]],
+    float AbsoluteY = 0.0 [[ float min=-10.0, float max=10.0 ]],
+    float AbsoluteZ = 0.0 [[ float min=-10.0, float max=10.0 ]],
+    float AbsoluteScale = 1.0 [[ float min=0.01, float max=5.0 ]],
+    int Iterations = 16 [[ int min=1, int max=60 ]],
+    float Bailout = 100.0 [[ float min=10.0, float max=300.0 ]],
+
+    // 立方体骨架参数
+    float CubeScale = 2.1 [[ float min=1.1, float max=4.0 ]],
+    float BoxLimit = 1.0 [[ float min=0.2, float max=2.0 ]],
+
+    // 棘刺造型控制
+    float SpikeHeight = 1.2 [[ float min=0.0, float max=3.0 ]],
+    float SpikeSharpness = 0.85 [[ float min=0.1, float max=2.0 ]],
+    float RidgeBevel = 0.3 [[ float min=0.0, float max=1.0 ]],
+
+    // 旋转与非对称形态控制
+    float TwistAngle = 0.0 [[ float min=-90.0, float max=90.0 ]],
+    float AngXY = 0.0 [[ float min=-180.0, float max=180.0 ]],
+    float AngYZ = 0.0 [[ float min=-180.0, float max=180.0 ]],
+    float AngXZ = 0.0 [[ float min=-180.0, float max=180.0 ]],
+
+    // 空间位移
+    float OffsetX = 0.8 [[ float min=-3.0, float max=3.0 ]],
+    float OffsetY = 0.8 [[ float min=-3.0, float max=3.0 ]],
+    float OffsetZ = 0.8 [[ float min=-3.0, float max=3.0 ]],
+
+    // Julia 模式
+    int JuliaMode = 0 [[ string label = "JuliaMode ON?", string widget = "boolean" ]],
+    float JuliaX = 0.0 [[ float min=-3.0, float max=3.0 ]],
+    float JuliaY = 0.0 [[ float min=-3.0, float max=3.0 ]],
+    float JuliaZ = 0.0 [[ float min=-3.0, float max=3.0 ]],
+
+    ADD_COLOR_PARAMS,
+    output _sdf c = _SDFDEF)
+{
+    vector p_orig = AbsoluteScale * (P - vector(AbsoluteX, AbsoluteY, AbsoluteZ));
+    vector z = p_orig;
+    vector c_pos = p_orig;
+
+    if (JuliaMode != 0) {
+        c_pos = vector(JuliaX, JuliaY, JuliaZ);
+    }
+
+    INIT_ORBIT_TRAP;
+
+    // 预计算旋转
+    float sXY = sin(radians(AngXY)); float cXY = cos(radians(AngXY));
+    float sYZ = sin(radians(AngYZ)); float cYZ = cos(radians(AngYZ));
+    float sXZ = sin(radians(AngXZ)); float cXZ = cos(radians(AngXZ));
+    float sTw = sin(radians(TwistAngle)); float cTw = cos(radians(TwistAngle));
+
+    float scaleAcc = 1.0;
+    float t = 0.0;
+    float r2 = 0.0;
+
+    for (int i = 0; i < Iterations; i++) {
+        // ---------------- 1. 立方体绝对面对称 (Cube Absolute Fold) ----------------
+        z[0] = fabs(z[0]);
+        z[1] = fabs(z[1]);
+        z[2] = fabs(z[2]);
+
+        // ---------------- 2. 立方体主对角线排序 (保持整体方块轮廓) ----------------
+        if (z[1] > z[0]) { t = z[0]; z[0] = z[1]; z[1] = t; }
+        if (z[2] > z[0]) { t = z[0]; z[0] = z[2]; z[2] = t; }
+        if (z[2] > z[1]) { t = z[1]; z[1] = z[2]; z[2] = t; }
+
+        // ---------------- 3. 金字塔尖刺向外挤出折叠 (Spike Generation) ----------------
+        // 利用帐篷函数与双向剪切将方块边缘和面拉扯成外突的锐刺
+        float spikeFold = z[0] - SpikeHeight;
+        if (spikeFold > 0.0) {
+            z[0] = SpikeHeight - spikeFold * SpikeSharpness;
+        } else {
+            z[0] = z[0] + spikeFold * (1.0 - SpikeSharpness);
+        }
+
+        // 倒角与次级刺突切削
+        z[1] = z[1] - clamp(z[1], -BoxLimit, BoxLimit) * RidgeBevel;
+        z[2] = fabs(z[2] - SpikeHeight * 0.5);
+
+        // ---------------- 4. 整体缩放与偏置 ----------------
+        z[0] = z[0] * CubeScale - OffsetX * (CubeScale - 1.0);
+        z[1] = z[1] * CubeScale - OffsetY * (CubeScale - 1.0);
+        z[2] = z[2] * CubeScale - OffsetZ * (CubeScale - 1.0);
+        scaleAcc *= CubeScale;
+
+        // 叠加原点/Julia 常数
+        z += c_pos * 0.15;
+
+        // ---------------- 5. 轴向微旋转 (用于生长螺旋晶刺) ----------------
+        if (fabs(TwistAngle) > 0.001) {
+            t = z[0];
+            z[0] = cTw * t - sTw * z[1];
+            z[1] = sTw * t + cTw * z[1];
+        }
+
+        // 全局旋转调制
+        t = z[1]; z[1] = cYZ * t + sYZ * z[2]; z[2] = -sYZ * t + cYZ * z[2];
+        t = z[0]; z[0] = cXZ * t - sXZ * z[2]; z[2] =  sXZ * t + cXZ * z[2];
+        t = z[0]; z[0] = cXY * t + sXY * z[1]; z[1] = -sXY * t + cXY * z[1];
+
+        // 记录 Orbit Trap 着色贴图 (基于最大轴向坐标形成硬表面色彩高光)
+        if (i < ColorIterations) {
+            float otVal = max(max(fabs(z[0]), fabs(z[1])), fabs(z[2]));
+            orbitTrap = min(orbitTrap, otVal);
+        }
+
+        r2 = dot(z, z);
+        if (r2 > Bailout) break;
+    }
+
+    // 输出 SDF：硬表面盒子几何估算，消除圆形膨胀
+    float maxAxis = max(max(fabs(z[0]), fabs(z[1])), fabs(z[2]));
+    c.dist = (maxAxis - 0.5) / scaleAcc / AbsoluteScale;
+
+    APPLY_ORBIT_TRAP;
+}

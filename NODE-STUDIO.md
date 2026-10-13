@@ -1,6 +1,6 @@
 # UBER BULB 节点版本
 
-入口 /nodes，原版 /uber 保留。
+入口 `/nodes`，主工作室入口 `/`；本地服务器将旧 `/uber` 链接跳转至 `/`。
 
 公式分组：输入与球面变换 → 球面幂次（Power，与双相位角度输入共同运算）→ 笛卡尔重建（ZMultiplier）→ 历史混合（PrevVecMul、OldVecMul）→ 常量反馈（Implode、Explode）。迭代与逃逸（Iterations、Bailout）是整个循环的控制节点，不是反馈之后的串行运算：每轮球面变换后、重建与反馈前检查逃逸，退出后将距离估计交给原渲染器。实线表示数据依赖，虚线表示反馈或循环控制；迭代节点以独立控制虚线连接每轮输入与退出后的输出。
 
@@ -16,8 +16,8 @@
 
 ## 实现边界
 
-`nodes.html/css/js` 是节点界面；`node-render.html/css` 是嵌入式预览；`node-engine.js` 是原版渲染器的独立镜像，视角缓存使用独立 sessionStorage 键 `uber-node-render-v1`。渲染器加载独立 `node-uber.glsl`，本次从原版 `uber.glsl` 逐字复制，避免后续节点着色器变更影响原版。字体和基础样式沿用共享资源，蓝金材质配置沿用原版；本次不修改 `/uber` 文件。
+开发源码位于 `src/ui/nodes/`，包括节点界面、嵌入式预览和页面适配器。公式、公式参数和 GPU 初始化共用 `src/formulas/uber-bulb/` 与 `src/renderer/`；四档画质、固定材质及旧相位路径由 `node-legacy` profile 和节点适配器保留。视角缓存继续使用独立 sessionStorage 键 `uber-node-render-v1`。构建生成 `nodes.html/css/js`、`node-render.html/css`、`node-engine.js` 和 `node-uber.glsl`，不能直接修改这些产物。
 
-`nodes.js` 持有节点图和参数编译；`node-bridge.js` 通过 postMessage 同步参数、播放与预览状态。父页面只接受同源且来自 renderer iframe 的状态；预览只接受同源且来自 parent 的命令。桥接拒绝未知参数、非有限数值与锁定相位字段，其余数字由渲染器按参数 schema 限幅。
+`editor.js` 持有节点图和参数编译，参数范围与默认值来自公式元数据；`bridge.js` 通过 `GenleNodeRenderer` 接口和 postMessage 同步参数、播放与预览状态。父页面只接受同源且来自 renderer iframe 的状态；预览只接受同源且来自 parent 的命令。桥接拒绝未知参数、非有限数值与锁定相位字段，其余数字由渲染器按参数 schema 限幅。
 
 视觉继承与此页面的局部排版见 `.impeccable/surfaces/nodes.md`。本次属于既有视觉世界的普通扩展，`DESIGN.md` 与 `.impeccable/design.json` 保持原样，不把节点布局或字号提升为全站设计规范。

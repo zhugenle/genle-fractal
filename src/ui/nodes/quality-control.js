@@ -1,0 +1,1 @@
+$('uber-quality').onchange=e=>{quality=Number(e.target.value);if(quality===3){playing=false;updateTransport();}$('action-status').textContent=quality===3?'超精细：两倍分辨率超采样，已暂停动画；生成速度取决于设备。':'画质已切换。';dirty=true;};

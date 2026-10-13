@@ -1,0 +1,25 @@
+{
+  "id": "uber-bulb",
+  "name": "UBER BULB V3.0",
+  "contract": "genle-formula-v1",
+  "attribution": "Machina-Infinitum, 2020",
+  "entryPoint": "evaluateFormula",
+  "uniformLayout": "uber-bulb-packed-v1",
+  "uniforms": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I"
+  ],
+  "files": {
+    "kernel": "kernel.glsl",
+    "parameters": "parameters.js",
+    "animation": "animation.js",
+    "uniforms": "uniforms.js"
+  }
+}
