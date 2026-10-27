@@ -24,6 +24,12 @@ async function loadFormulaDevice(){
 }
 async function init(){if(!gl){error('无法启动 WebGL。请使用支持硬件加速的 Chrome 或 Edge。');return;}requestAnimationFrame(frame);await loadFormulaDevice();}
 
+// Video output size and GPU sampling size are different in Ultra (2× SSAA).
+// Material coordinates stay anchored to output pixels across all quality tiers.
+function mp4RenderDimensions(selectedQuality){
+ const output=1440,sampling=selectedQuality===3?2:1,size=output*sampling;
+ return {width:size,height:size,detailHeight:size,mappingHeight:output,nativeFactor:sampling,factor:sampling,shaderQuality:[0,1,1.5,2,3].indexOf(selectedQuality),cameraScale:1.12};
+}
 function draw(forceFull=false){if(!ready)return;const started=performance.now();
 if(!viewportSize.width){const rect=canvas.getBoundingClientRect();viewportSize.width=rect.width;viewportSize.height=rect.height;}
 const rect=viewportSize,nativeFactor=({0:.65,1:1,1.5:1.25,2:1.5,3:2})[quality]*Math.min(devicePixelRatio,quality>=2?2:1.5);

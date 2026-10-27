@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-14",
+  "timezone": "Asia/Shanghai",
+  "platform": "Sites",
+  "version": 16,
+  "projectId": "appgprj_6aca1e3c59e88191933bd9fc1787f8a4",
+  "versionId": "appgprj_6aca1e3c59e88191933bd9fc1787f8a4~appgver_45366aaee7dc8191911957fa2845580c",
+  "deploymentId": "appgdep_6acf0acedb388191aa964d2dc7d61d45",
+  "sourceCommit": "b0bd59536a64dfdea8ec15bec6d2b737cc456659",
+  "status": "succeeded",
+  "url": "https://fractal-gallery-gen-20261010.zhugenle.chatgpt.site",
+  "audience": "public",
+  "checks": [
+    "source checks passed",
+    "build passed: 26 assets",
+    "dist matches source",
+    "UBER and SPIKED actual local GPU rendering",
+    "node preview actual local GPU rendering"
+  ],
+  "notes": [
+    "Retained legacy uber.html entry using studio source",
+    "Composable graph system remains a planning document, not implemented",
+    "No push to GitHub main; isolated Sites source checkout used"
+  ]
+}

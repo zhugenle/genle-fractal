@@ -3,6 +3,19 @@
   "formula": "uber-bulb",
   "output": "dist",
   "bundles": {
+    "graph.js": [
+      "src/formulas/uber-bulb/nodes.js",
+      "src/formulas/spiked-cube/nodes.js",
+      "src/graph/registry.js",
+      "src/graph/compiler.js",
+      "src/graph/examples.js"
+    ],
+    "composer.js": [
+      "src/ui/nodes/composer/controls.js",
+      "src/ui/nodes/composer/workspace-editor.js",
+      "src/ui/nodes/composer/canvas.js",
+      "src/ui/nodes/composer/bootstrap.js"
+    ],
     "uber.js": [
       "{studio-formulas}",
       "src/renderer/webgl-device.js",
@@ -25,8 +38,11 @@
       "src/ui/studio/fullscreen.js",
       "src/ui/studio/quality-control.js",
       "src/state/studio-camera-input.js",
+      "src/ui/studio/viewport-capture.js",
+      "src/state/mp4-muxer.js",
       "src/state/studio-recording.js",
       "src/ui/studio/bootstrap.js",
+      "src/ui/studio/graph-adapter.js",
       "src/ui/studio/i18n-theme.js"
     ],
     "nodes.js": [
@@ -56,9 +72,29 @@
       "src/state/node-recording.js",
       "src/ui/nodes/bootstrap.js",
       "src/ui/nodes/renderer-api.js"
+    ],
+    "graph-state.js": [
+      "src/state/graph-document.js",
+      "src/state/graph-workspace.js"
+    ],
+    "graph-preview.js": [
+      "{formula}/parameters.js",
+      "{formula}/uniforms.js",
+      "src/renderer/parameters.js",
+      "src/renderer/uniforms.js",
+      "src/renderer/webgl-device.js",
+      "src/renderer/graph-preview.js"
     ]
   },
   "shaders": {
+    "graph-template.glsl": [
+      "src/renderer/profiles/studio/prologue.glsl",
+      "src/renderer/shaders/rotation.glsl",
+      "src/graph/template.glsl",
+      "src/renderer/shaders/surface.glsl",
+      "src/renderer/shaders/lighting-math.glsl",
+      "src/renderer/profiles/studio/surface.glsl"
+    ],
     "uber.glsl": [
       "src/renderer/profiles/studio/prologue.glsl",
       "src/renderer/shaders/rotation.glsl",
@@ -85,7 +121,12 @@
     ]
   },
   "copies": {
+    "graph-gpu-check.html": "src/graph/tests/gpu.html",
+    "graph-gpu-check.js": "src/graph/tests/gpu.js",
+    "composer.html": "src/ui/nodes/composer/index.html",
+    "composer.css": "src/ui/nodes/composer/styles.css",
     "index.html": "src/ui/studio/index.html",
+    "uber.html": "src/ui/studio/index.html",
     "uber.css": "src/ui/studio/styles.css",
     "node-bridge.js": "src/ui/nodes/bridge.js",
     "nodes.html": "src/ui/nodes/index.html",
@@ -95,10 +136,12 @@
     "gallery.html": "src/ui/gallery/index.html",
     "app.js": "src/ui/gallery/app.js",
     "style.css": "src/ui/gallery/styles.css",
-    "fragment.glsl": "src/ui/gallery/fragment.glsl"
+    "fragment.glsl": "src/ui/gallery/fragment.glsl",
+    "workspace-gpu-check.html": "src/graph/tests/workspace-gpu.html",
+    "workspace-gpu-check.js": "src/graph/tests/workspace-gpu.js",
+    "workspace-responsive-check.html": "src/graph/tests/workspace-responsive.html"
   },
   "obsolete": [
-    "uber.html",
     "studio-ui.js",
     "render-budget.js"
   ],
@@ -109,12 +152,103 @@
   "studioDefaults": {
     "uber-bulb": {
       "camera": {
-        "yaw": 0.8,
-        "pitch": 0.65,
-        "distance": 10.5,
-        "roll": -35
+        "yaw": -1.370000000000001,
+        "pitch": -0.5572036732050965,
+        "distance": 9.037433752463103,
+        "roll": 0
       },
-      "parameters": {}
+      "parameters": {
+        "Power": 4,
+        "LoopPI": 1.402738,
+        "LoopPI2": 2.553983,
+        "ZMultiplier": -0.726468,
+        "PrevVecMul": 0.188993,
+        "OldVecMul": -1.171462,
+        "Implode": 0.75,
+        "Explode": -0.1,
+        "Iterations": 9,
+        "Bailout": 20,
+        "Loop1Start": 1.695,
+        "Loop1End": 0.129,
+        "Loop2Start": 3.14,
+        "Loop2End": 0,
+        "ColorA": 5046272,
+        "ColorB": 16711680,
+        "Metallic": 1,
+        "Roughness": 0.2,
+        "Clearcoat": 0.08,
+        "BlueMetallic": 0.02,
+        "BlueRoughness": 0.6,
+        "Emission": 0,
+        "GradientType": 0,
+        "GradientSpace": 0,
+        "GradientAngle": 0,
+        "GradientGamma": 1,
+        "GradientDistort": 0,
+        "GradientRadius": 1,
+        "GradientTex": 0,
+        "GradientInvert": 0,
+        "GradientStartX": 1,
+        "GradientStartY": 1,
+        "GradientStartZ": 1,
+        "GradientEndX": 1,
+        "GradientEndY": 1,
+        "GradientEndZ": 1,
+        "KeyColor": 16774877,
+        "FillColor": 3394047,
+        "RimColor": 16777215,
+        "KeyIntensity": 2.1,
+        "CyanIntensity": 1.1,
+        "RimIntensity": 0.25,
+        "KeyAzimuth": -35,
+        "KeyElevation": 55,
+        "EnvironmentRotation": 0,
+        "Exposure": -0.3,
+        "FillIntensity": 0.025,
+        "ReflectionGain": 1,
+        "LightSize": 0.38,
+        "SpecularFill": 0.32,
+        "ReflectionOcclusion": 0.3,
+        "BlueBounce": 0.8,
+        "CameraRoll": 0,
+        "AngXY": 0,
+        "AngYZ": 0,
+        "AngXZ": 0,
+        "AbsoluteScale": 0.6,
+        "AbsoluteX": 0,
+        "AbsoluteY": 0,
+        "AbsoluteZ": 0,
+        "Radius": 1,
+        "MinRad": 1,
+        "MaxRad": 1,
+        "Xcen": 1,
+        "Ycen": 0,
+        "Zcen": 0,
+        "nonconformal": 0,
+        "JuliaMode": 0,
+        "JuliaX": 0,
+        "JuliaY": 0,
+        "JuliaZ": 0,
+        "CylindricalMOD": 0,
+        "CylindricalNegativeMOD": 0,
+        "BrotMOD": 0,
+        "BrotFreq": 1,
+        "fractionary": 0,
+        "ColorIterations": 16,
+        "UMode": 0,
+        "UScale": 2,
+        "VMode": 0,
+        "VScale": 1.113689,
+        "ViewClip": 0,
+        "Bounds": 3,
+        "StepScale": 0.3,
+        "DetailPrecision": 0.5,
+        "NormalFilter": 2.5
+      },
+      "animation": {
+        "duration": 20,
+        "progress": 0.8818967296297242
+      }
     },
     "spiked-cube": {
       "camera": {

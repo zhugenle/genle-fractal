@@ -11,7 +11,7 @@ function activateFormula(id,{remember=true}={}){
  $('formula-select').value=id;configurePhaseReadouts();$('reference-toggle').hidden=id!=='uber-bulb';$('reference-panel').hidden=true;gifButton.hidden=id!=='uber-bulb';
  canvas.setAttribute('aria-label',formula.name+' 3D');
  fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;
- loadFormulaDevice();renderBudget.resetSamples();submittedFrame=false;dirty=true;sync();updateTransport();return true;
+ loadFormulaDevice();renderBudget.resetSamples();submittedFrame=false;dirty=true;sync();updateTransport();renderLocalPresets();return true;
 }
 $('formula-select').onchange=e=>{cancelPresetTransition();if(activateFormula(e.target.value)){playing=true;referencePreset=false;updateTransport();}};
 

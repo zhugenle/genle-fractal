@@ -1,0 +1,323 @@
+{
+  "schema": "genle-fractal-formula",
+  "schemaVersion": 1,
+  "manifest": {
+    "formulaId": "custom-cube-study",
+    "name": "SPIKED CUBE · 算子还原",
+    "engine": "genle-iterate-v1",
+    "distanceKind": "heuristic",
+    "attribution": [
+      "UBER BULB © 2020 Machina-Infinitum",
+      "SPIKED CUBE IFS: user-supplied OSL"
+    ]
+  },
+  "dependencies": [
+    {
+      "type": "absolute-fold",
+      "version": 1
+    },
+    {
+      "type": "axis-sort",
+      "version": 1
+    },
+    {
+      "type": "escape",
+      "version": 1
+    },
+    {
+      "type": "formula-output",
+      "version": 1
+    },
+    {
+      "type": "ifs-affine",
+      "version": 1
+    },
+    {
+      "type": "offset-fold",
+      "version": 1
+    },
+    {
+      "type": "orbit-input",
+      "version": 1
+    },
+    {
+      "type": "orbit-trap",
+      "version": 1
+    },
+    {
+      "type": "ridge-clamp",
+      "version": 1
+    },
+    {
+      "type": "rotate",
+      "version": 1
+    },
+    {
+      "type": "spike-fold",
+      "version": 1
+    },
+    {
+      "type": "twist",
+      "version": 1
+    }
+  ],
+  "graph": {
+    "schema": "genle-fractal-graph",
+    "schemaVersion": 1,
+    "id": "cube-study",
+    "name": "SPIKED CUBE · 算子还原",
+    "nodes": [
+      {
+        "id": "input",
+        "type": "orbit-input",
+        "version": 1,
+        "params": {
+          "Scale": 1,
+          "X": 0,
+          "Y": 0,
+          "Z": 0,
+          "Yaw": 0,
+          "Canonical": 1,
+          "Julia": 0,
+          "JuliaX": 0,
+          "JuliaY": 0,
+          "JuliaZ": 0
+        },
+        "position": [
+          40,
+          60
+        ]
+      },
+      {
+        "id": "absolute",
+        "type": "absolute-fold",
+        "version": 1,
+        "params": {},
+        "position": [
+          350,
+          60
+        ]
+      },
+      {
+        "id": "sort",
+        "type": "axis-sort",
+        "version": 1,
+        "params": {},
+        "position": [
+          660,
+          60
+        ]
+      },
+      {
+        "id": "spike",
+        "type": "spike-fold",
+        "version": 1,
+        "params": {
+          "SpikeHeight": 1.2,
+          "SpikeSharpness": 0.85
+        },
+        "position": [
+          660,
+          290
+        ]
+      },
+      {
+        "id": "ridge",
+        "type": "ridge-clamp",
+        "version": 1,
+        "params": {
+          "BoxLimit": 1,
+          "RidgeBevel": 0.3
+        },
+        "position": [
+          350,
+          290
+        ]
+      },
+      {
+        "id": "offset",
+        "type": "offset-fold",
+        "version": 1,
+        "params": {
+          "Offset": 0.6
+        },
+        "position": [
+          40,
+          290
+        ]
+      },
+      {
+        "id": "affine",
+        "type": "ifs-affine",
+        "version": 1,
+        "params": {
+          "Scale": 2.1,
+          "OffsetX": 0.8,
+          "OffsetY": 0.8,
+          "OffsetZ": 0.8,
+          "ConstantWeight": 0.15
+        },
+        "position": [
+          40,
+          520
+        ]
+      },
+      {
+        "id": "twist",
+        "type": "twist",
+        "version": 1,
+        "params": {
+          "Angle": 0
+        },
+        "position": [
+          350,
+          520
+        ]
+      },
+      {
+        "id": "rotate",
+        "type": "rotate",
+        "version": 1,
+        "params": {
+          "XY": 0,
+          "YZ": 0,
+          "XZ": 0
+        },
+        "position": [
+          660,
+          520
+        ]
+      },
+      {
+        "id": "trap",
+        "type": "orbit-trap",
+        "version": 1,
+        "params": {
+          "Mode": 1,
+          "Iterations": 16
+        },
+        "position": [
+          660,
+          750
+        ]
+      },
+      {
+        "id": "escape",
+        "type": "escape",
+        "version": 1,
+        "params": {
+          "Limit": 100,
+          "Squared": 1
+        },
+        "position": [
+          350,
+          750
+        ]
+      },
+      {
+        "id": "output",
+        "type": "formula-output",
+        "version": 1,
+        "params": {
+          "Iterations": 16,
+          "Estimator": 1,
+          "Safety": 1
+        },
+        "position": [
+          40,
+          750
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "input",
+        "to": "absolute",
+        "port": "state"
+      },
+      {
+        "from": "absolute",
+        "to": "sort",
+        "port": "state"
+      },
+      {
+        "from": "sort",
+        "to": "spike",
+        "port": "state"
+      },
+      {
+        "from": "spike",
+        "to": "ridge",
+        "port": "state"
+      },
+      {
+        "from": "ridge",
+        "to": "offset",
+        "port": "state"
+      },
+      {
+        "from": "offset",
+        "to": "affine",
+        "port": "state"
+      },
+      {
+        "from": "affine",
+        "to": "twist",
+        "port": "state"
+      },
+      {
+        "from": "twist",
+        "to": "rotate",
+        "port": "state"
+      },
+      {
+        "from": "rotate",
+        "to": "trap",
+        "port": "state"
+      },
+      {
+        "from": "trap",
+        "to": "escape",
+        "port": "state"
+      },
+      {
+        "from": "escape",
+        "to": "output",
+        "port": "state"
+      }
+    ],
+    "output": "output",
+    "parameters": [
+      {
+        "id": "spike_SpikeHeight",
+        "label": "尖刺高度",
+        "nodeId": "spike",
+        "key": "SpikeHeight",
+        "min": 0,
+        "max": 3,
+        "step": 0.001,
+        "defaultValue": 1.2
+      },
+      {
+        "id": "spike_SpikeSharpness",
+        "label": "尖锐度",
+        "nodeId": "spike",
+        "key": "SpikeSharpness",
+        "min": 0.1,
+        "max": 2,
+        "step": 0.001,
+        "defaultValue": 0.85
+      },
+      {
+        "id": "affine_Scale",
+        "label": "迭代缩放",
+        "nodeId": "affine",
+        "key": "Scale",
+        "min": 1.1,
+        "max": 4,
+        "step": 0.001,
+        "defaultValue": 2.1
+      }
+    ]
+  }
+}

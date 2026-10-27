@@ -1,0 +1,27 @@
+import fs from 'node:fs/promises';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {webcrypto} from 'node:crypto';
+const paths=['../../formulas/uber-bulb/nodes.js','../../formulas/spiked-cube/nodes.js','../../graph/registry.js','../../graph/compiler.js','../../graph/examples.js','../graph-document.js','../graph-workspace.js'];
+const code=(await Promise.all(paths.map(p=>fs.readFile(new URL(p,import.meta.url),'utf8')))).join('\n');
+const ctx=vm.createContext({crypto:webcrypto});vm.runInContext(code,ctx);
+const D=ctx.GenleDocuments,G=ctx.GenleGraph,plain=x=>JSON.parse(JSON.stringify(x));
+const w=new D.FormulaWorkspace(),empty=w.add();assert.equal(empty.graph.nodes.length,0);
+assert.throws(()=>D.renderable(empty.graph),/空白/);
+const incomplete=D.asDraft(G.example('uber'));incomplete.edges=incomplete.edges.filter(e=>e.to!=='output');assert.doesNotThrow(()=>D.validateDraft(incomplete));assert.throws(()=>D.renderable(incomplete),/连接/);
+const valid=D.asDraft(G.example('uber'));assert.doesNotThrow(()=>D.renderable(valid));
+const doc=w.add('copy',valid),other=w.add('cube');assert.notEqual(doc.id,other.id);assert.notEqual(doc.graph.id,valid.id);
+w.activate(doc.id);const before=doc.graph.nodes.find(n=>n.id==='power').params.Power;
+doc.parameter('power','Power',7);doc.parameter('power','Power',6);doc.end();assert.equal(doc.past.length,1);doc.undo();assert.equal(doc.graph.nodes.find(n=>n.id==='power').params.Power,before);doc.redo();assert.equal(doc.graph.nodes.find(n=>n.id==='power').params.Power,6);assert.equal(other.past.length,0);
+const p=doc.graph.parameters.find(p=>p.nodeId==='power'&&p.key==='Power');p.min=5;p.max=9;const saved=JSON.stringify(doc.graph);assert.throws(()=>doc.parameter('power','Power',4),/公开/);assert.equal(JSON.stringify(doc.graph),saved,'Rejected change must be atomic');
+doc.preview.camera.yaw=2;doc.editor.x=121;
+const round=new D.FormulaWorkspace(plain(w.serialize()));assert.equal(round.active.preview.camera.yaw,2);assert.equal(round.active.editor.x,121);assert.equal(round.active.past.length,doc.past.length);
+round.close(doc.id);assert(!round.documents.some(d=>d.id===doc.id));assert.equal(round.reopen().id,doc.id);
+const bad=plain(w.serialize());bad.documents[0].id='invalid id';const previous=JSON.stringify(w.serialize());assert.throws(()=>w.load(bad));assert.equal(JSON.stringify(w.serialize()),previous);
+const normalized=new D.FormulaDocument(valid,{editor:{zoom:100,x:'oops',selection:['missing']},preview:{camera:{distance:-1},quality:9}});assert.equal(normalized.editor.zoom,2);assert.equal(normalized.editor.x,30);assert.equal(normalized.editor.selection.length,0);assert.equal(normalized.preview.camera.distance,.5);
+const connected=D.connect(incomplete,'feedback','output','state');assert.doesNotThrow(()=>D.renderable(connected));assert.throws(()=>D.connect(valid,'feedback','radial','state'),/反馈环/);
+const unused=plain(valid);unused.nodes.push({...plain(unused.nodes.find(n=>n.id==='power')),id:'unused'});assert(!D.renderable(unused).nodes.some(n=>n.id==='unused'));
+const repo=new D.WorkspaceRepository();repo.recovery=true;await assert.rejects(()=>repo.write(w.serialize()),/恢复模式/);
+console.log('PASS: blank/incomplete drafts, isolated documents, transaction undo, atomic parameter rejection, project recovery and reachable compilation.');
+
+w.activate(doc.id);const duplicate=w.duplicate();assert.equal(duplicate.preview.camera.yaw,doc.preview.camera.yaw);assert.equal(duplicate.editor.x,doc.editor.x);duplicate.preview.camera.yaw=9;assert.equal(doc.preview.camera.yaw,2);assert.notEqual(duplicate.id,doc.id);console.log('PASS: experiment duplication preserves independent preview and editor state.');

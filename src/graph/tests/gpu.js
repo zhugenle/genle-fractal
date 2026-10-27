@@ -1,0 +1,20 @@
+// Numerical oracle: original shipped kernels vs extracted operator graphs on the same GPU.
+(async()=>{
+ const output=document.getElementById('result'),gl=document.getElementById('test').getContext('webgl');
+ try{if(!gl)throw Error('WebGL unavailable');const lines=[];
+ function catalog(){const g=GenleGraph.example('uber');let previous='trap';g.edges=g.edges.filter(e=>e.to!=='output');for(const [type,def]of Object.entries(GenleGraph.types)){if(['orbit-input','formula-output'].includes(type)||g.nodes.some(n=>n.type===type))continue;const id='catalog'+g.nodes.length;g.nodes.push({id,type,version:1,params:Object.fromEntries(def.params.map(d=>[d[0],d[5]])),position:[10,10]});for(const port of def.inputs)g.edges.push({from:previous,to:id,port});previous=id;}g.edges.push({from:previous,to:'output',port:'state'});return g;}
+ for(const kind of ['uber','cube','hybrid','catalog']){
+  const source=await (await fetch(kind==='uber'?'uber.glsl':'spiked-cube.glsl')).text();
+  const formula=kind==='uber'?'uber-bulb':'spiked-cube';
+  const core=source.split('/* source: src/formulas/'+formula+'/kernel.glsl */')[1].split('/* source: src/renderer/shaders/surface.glsl */')[0].replace(/evaluateFormula/g,'originalFormula');
+  const graph=GenleGraph.compile(kind==='catalog'?catalog():GenleGraph.example(kind));
+  const fragment='precision highp float;uniform vec4 A,B,C,D,E,F,G,H,I;'+core+'\n'+graph.kernel+`\nvoid main(){float k=floor(gl_FragCoord.x);vec3 p=vec3(sin(k*1.37),cos(k*.79),sin(k*2.13))*(.15+mod(k,13.)*.37);vec2 a=originalFormula(p),b=graphField(p);vec2 err=abs(a-b)/max(abs(a),vec2(.0001));bool good=${['uber','cube'].includes(kind)?'err.x<.003&&err.y<.01':'all(lessThan(abs(b),vec2(1e20)))'};gl_FragColor=vec4(clamp(err.x,0.,1.),good?1.:0.,clamp(err.y,0.,1.),1.);}`;
+  const shaders=[];for(const [type,text]of [[gl.VERTEX_SHADER,'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'],[gl.FRAGMENT_SHADER,fragment]]){const s=gl.createShader(type);gl.shaderSource(s,text);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));shaders.push(s);}
+  const program=gl.createProgram();shaders.forEach(s=>gl.attachShader(program,s));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));gl.useProgram(program);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const attr=gl.getAttribLocation(program,'p');gl.enableVertexAttribArray(attr);gl.vertexAttribPointer(attr,2,gl.FLOAT,false,0,0);
+  const set=(n,v)=>gl.uniform4fv(gl.getUniformLocation(program,n),v);
+  const values=kind==='uber'?{A:[0,0,0,.6],B:[10,20,-.276102,8],C:[-.431555,-1.211137,.1,-.5],D:[0,0,0,1.402738],E:[2.553983,0,0,0],F:[0,0,0,0],G:[1,0,0,1],H:[1,1,1,0],I:[0,16,0,2]}:{A:[0,0,0,1],B:[16,100,0,0],C:[0,0,0,0],D:[0,0,0,0],E:[0,0,0,0],F:[0,0,0,0],G:[0,0,0,1],H:[1,1,0,0],I:[0,16,0,1],SC0:[2.1,1,1.2,.85],SC1:[.3,0,.8,.8],SC2:[.8,1,1,0]};
+  for(const [n,v]of Object.entries(values))set(n,v);graph.upload(set);gl.viewport(0,0,64,1);gl.drawArrays(gl.TRIANGLES,0,6);const pixels=new Uint8Array(256);gl.readPixels(0,0,64,1,gl.RGBA,gl.UNSIGNED_BYTE,pixels);const bad=[];for(let i=0;i<64;i++)if(pixels[i*4+1]<250)bad.push(i+'(distance≈'+(pixels[i*4]/255).toFixed(3)+',orbit≈'+(pixels[i*4+2]/255).toFixed(3)+')');if(bad.length)throw Error(kind+' mismatch samples: '+bad.join(','));lines.push('PASS '+kind+(['uber','cube'].includes(kind)?': 64/64 distance + orbit samples, distance tolerance 0.003 / orbit tolerance 0.01':': compiled and 64/64 finite samples'));shaders.forEach(s=>gl.deleteShader(s));gl.deleteBuffer(buffer);gl.deleteProgram(program);
+ }
+ output.textContent=lines.join('\n')+'\nPASS: original kernels and extracted reference graphs match.';document.body.dataset.result='pass';
+ }catch(e){output.textContent='FAIL: '+e.message;document.body.dataset.result='fail';console.error(e);}
+})();

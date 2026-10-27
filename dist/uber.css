@@ -69,3 +69,9 @@ footer{border-top:1px solid #202020}
 .viewport-quality{display:flex;align-items:center;gap:12px}.viewport-quality .adaptive-label{gap:4px;white-space:nowrap}.adaptive-label input{width:12px;height:12px;margin:0}
 
 .param-group summary .group-reset{margin-left:auto;padding:0 4px;min-height:22px;background:transparent;color:var(--muted);font-size:10px;line-height:1}.param-group summary .group-reset:hover{color:var(--accent)}.param-group summary svg{margin-left:6px}
+
+.composer-link{color:var(--accent);font-size:10px;text-decoration:none;padding:4px 6px;white-space:nowrap}
+
+.studio-stage.mp4-export-square{height:auto!important;min-height:0!important;aspect-ratio:1}.mp4-export-square #uber-canvas{position:absolute;inset:0;width:100%;height:100%}.studio-stage.mp4-export-square .studio-overlay{flex-wrap:wrap}
+
+.studio-stage.mp4-export-square{width:var(--export-width,100%);max-width:none}

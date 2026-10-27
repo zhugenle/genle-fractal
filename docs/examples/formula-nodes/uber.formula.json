@@ -1,0 +1,268 @@
+{
+  "schema": "genle-fractal-formula",
+  "schemaVersion": 1,
+  "manifest": {
+    "formulaId": "custom-uber-study",
+    "name": "UBER BULB · 算子还原",
+    "engine": "genle-iterate-v1",
+    "distanceKind": "heuristic",
+    "attribution": [
+      "UBER BULB © 2020 Machina-Infinitum",
+      "SPIKED CUBE IFS: user-supplied OSL"
+    ]
+  },
+  "dependencies": [
+    {
+      "type": "bulb-power",
+      "version": 1
+    },
+    {
+      "type": "constant-feedback",
+      "version": 1
+    },
+    {
+      "type": "formula-output",
+      "version": 1
+    },
+    {
+      "type": "history-add",
+      "version": 1
+    },
+    {
+      "type": "history-commit",
+      "version": 1
+    },
+    {
+      "type": "orbit-input",
+      "version": 1
+    },
+    {
+      "type": "orbit-trap",
+      "version": 1
+    },
+    {
+      "type": "radial-remap",
+      "version": 1
+    },
+    {
+      "type": "rotate",
+      "version": 1
+    }
+  ],
+  "graph": {
+    "schema": "genle-fractal-graph",
+    "schemaVersion": 1,
+    "id": "uber-study",
+    "name": "UBER BULB · 算子还原",
+    "nodes": [
+      {
+        "id": "input",
+        "type": "orbit-input",
+        "version": 1,
+        "params": {
+          "Scale": 0.6,
+          "X": 0,
+          "Y": 0,
+          "Z": 0,
+          "Yaw": 0,
+          "Canonical": 0,
+          "Julia": 0,
+          "JuliaX": 0,
+          "JuliaY": 0,
+          "JuliaZ": 0
+        },
+        "position": [
+          40,
+          60
+        ]
+      },
+      {
+        "id": "radial",
+        "type": "radial-remap",
+        "version": 1,
+        "params": {
+          "Radius": 1,
+          "MinRad": 1,
+          "MaxRad": 1,
+          "Xcen": 1,
+          "Ycen": 0,
+          "Zcen": 0,
+          "nonconformal": 0
+        },
+        "position": [
+          350,
+          60
+        ]
+      },
+      {
+        "id": "rotate",
+        "type": "rotate",
+        "version": 1,
+        "params": {
+          "XY": 0,
+          "YZ": 0,
+          "XZ": 0
+        },
+        "position": [
+          660,
+          60
+        ]
+      },
+      {
+        "id": "power",
+        "type": "bulb-power",
+        "version": 1,
+        "params": {
+          "Power": 8,
+          "LoopPI": 1.402738,
+          "LoopPI2": 2.553983,
+          "ZMultiplier": -0.276102,
+          "Bailout": 20
+        },
+        "position": [
+          660,
+          290
+        ]
+      },
+      {
+        "id": "history",
+        "type": "history-add",
+        "version": 1,
+        "params": {
+          "PrevVecMul": -0.431555,
+          "OldVecMul": -1.211137,
+          "ConstantWeight": 1
+        },
+        "position": [
+          350,
+          290
+        ]
+      },
+      {
+        "id": "commit",
+        "type": "history-commit",
+        "version": 1,
+        "params": {},
+        "position": [
+          40,
+          290
+        ]
+      },
+      {
+        "id": "feedback",
+        "type": "constant-feedback",
+        "version": 1,
+        "params": {
+          "Implode": 0.1,
+          "Explode": -0.5
+        },
+        "position": [
+          40,
+          520
+        ]
+      },
+      {
+        "id": "trap",
+        "type": "orbit-trap",
+        "version": 1,
+        "params": {
+          "Mode": 0,
+          "Iterations": 16
+        },
+        "position": [
+          350,
+          520
+        ]
+      },
+      {
+        "id": "output",
+        "type": "formula-output",
+        "version": 1,
+        "params": {
+          "Iterations": 10,
+          "Estimator": 0,
+          "Safety": 1
+        },
+        "position": [
+          660,
+          520
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "input",
+        "to": "radial",
+        "port": "state"
+      },
+      {
+        "from": "radial",
+        "to": "rotate",
+        "port": "state"
+      },
+      {
+        "from": "rotate",
+        "to": "power",
+        "port": "state"
+      },
+      {
+        "from": "power",
+        "to": "history",
+        "port": "state"
+      },
+      {
+        "from": "history",
+        "to": "commit",
+        "port": "state"
+      },
+      {
+        "from": "commit",
+        "to": "feedback",
+        "port": "state"
+      },
+      {
+        "from": "feedback",
+        "to": "trap",
+        "port": "state"
+      },
+      {
+        "from": "trap",
+        "to": "output",
+        "port": "state"
+      }
+    ],
+    "output": "output",
+    "parameters": [
+      {
+        "id": "power_Power",
+        "label": "幂次",
+        "nodeId": "power",
+        "key": "Power",
+        "min": 2,
+        "max": 24,
+        "step": 0.01,
+        "defaultValue": 8
+      },
+      {
+        "id": "power_LoopPI",
+        "label": "纬相位 · rad",
+        "nodeId": "power",
+        "key": "LoopPI",
+        "min": 0,
+        "max": 6.283185307,
+        "step": 0.000001,
+        "defaultValue": 1.402738
+      },
+      {
+        "id": "power_LoopPI2",
+        "label": "经相位 · rad",
+        "nodeId": "power",
+        "key": "LoopPI2",
+        "min": 0,
+        "max": 6.283185307,
+        "step": 0.000001,
+        "defaultValue": 2.553983
+      }
+    ]
+  }
+}

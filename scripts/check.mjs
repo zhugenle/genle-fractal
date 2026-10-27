@@ -39,7 +39,7 @@ for(const [name,bytes]of outputs)if(name.endsWith('.html')){
  const html=bytes.toString();
  for(const m of html.matchAll(/(?:src|href)="([^"#]+)"/g)){
   const ref=m[1];if(ref==='./'||ref.startsWith('http')||ref.startsWith('data:')||ref.startsWith('/'))continue;
-  assert(outputs.has(ref),name+' references missing asset '+ref);
+  assert(outputs.has(ref.split(/[?#]/)[0]),name+' references missing asset '+ref);
  }
 }
 console.log('PASS: JavaScript bundles, shared formula contract, parameter bindings, closed phase loop and local asset references.');
@@ -73,3 +73,8 @@ for(const entry of registry){
 context.testState={parameters:{Power:8},camera:{yaw:0,pitch:0,distance:10},animation:{duration:20,progress:0,playing:true},quality:2};
 assert.equal(vm.runInContext('sanitizePreset(testState).formulaId',context),'uber-bulb');
 console.log('PASS: legacy presets, cross-formula identities and hidden SPIKED fields.');
+await import('../src/graph/tests/graph.test.mjs');
+
+await import('../src/state/tests/mp4-muxer.test.mjs');
+
+await import('../src/state/tests/graph-workspace.test.mjs');

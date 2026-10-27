@@ -431,7 +431,7 @@ function referencePhases(position,v){const f=((position%1)+1)%1,period=TAU/v.Pow
 // v1 packed uniform adapter; rendering code does not define the formula mapping.
 function uploadFormulaUniforms(uniform,v,lp,lp2){uniform('A',[v.AbsoluteX,v.AbsoluteY,v.AbsoluteZ,v.AbsoluteScale]);uniform('B',[v.Iterations,v.Bailout,v.ZMultiplier,v.Power]);uniform('C',[v.PrevVecMul,v.OldVecMul,v.Implode,v.Explode]);uniform('D',[v.AngXY,v.AngYZ,v.AngXZ,lp]);uniform('E',[lp2,v.CylindricalMOD,v.CylindricalNegativeMOD,v.JuliaMode]);uniform('F',[v.JuliaX,v.JuliaY,v.JuliaZ,v.BrotMOD]);uniform('G',[v.BrotFreq,v.fractionary,v.nonconformal,v.Radius]);uniform('H',[v.MinRad,v.MaxRad,v.Xcen,v.Ycen]);uniform('I',[v.Zcen,v.ColorIterations,v.UMode,v.UScale]);}
 
-return {id:"uber-bulb",name:"UBER BULB V3.0",profile:{"camera":{"yaw":0.8,"pitch":0.65,"distance":10.5,"roll":-35},"parameters":{}},groups:FORMULA_GROUPS,hidden:typeof FORMULA_HIDDEN_PARAMETERS==="undefined"?[]:FORMULA_HIDDEN_PARAMETERS,reference:REFERENCE_FORMULA_PARAMETERS,phases:referencePhases,upload:uploadFormulaUniforms};})(),
+return {id:"uber-bulb",name:"UBER BULB V3.0",profile:{"camera":{"yaw":-1.370000000000001,"pitch":-0.5572036732050965,"distance":9.037433752463103,"roll":0},"parameters":{"Power":4,"LoopPI":1.402738,"LoopPI2":2.553983,"ZMultiplier":-0.726468,"PrevVecMul":0.188993,"OldVecMul":-1.171462,"Implode":0.75,"Explode":-0.1,"Iterations":9,"Bailout":20,"Loop1Start":1.695,"Loop1End":0.129,"Loop2Start":3.14,"Loop2End":0,"ColorA":5046272,"ColorB":16711680,"Metallic":1,"Roughness":0.2,"Clearcoat":0.08,"BlueMetallic":0.02,"BlueRoughness":0.6,"Emission":0,"GradientType":0,"GradientSpace":0,"GradientAngle":0,"GradientGamma":1,"GradientDistort":0,"GradientRadius":1,"GradientTex":0,"GradientInvert":0,"GradientStartX":1,"GradientStartY":1,"GradientStartZ":1,"GradientEndX":1,"GradientEndY":1,"GradientEndZ":1,"KeyColor":16774877,"FillColor":3394047,"RimColor":16777215,"KeyIntensity":2.1,"CyanIntensity":1.1,"RimIntensity":0.25,"KeyAzimuth":-35,"KeyElevation":55,"EnvironmentRotation":0,"Exposure":-0.3,"FillIntensity":0.025,"ReflectionGain":1,"LightSize":0.38,"SpecularFill":0.32,"ReflectionOcclusion":0.3,"BlueBounce":0.8,"CameraRoll":0,"AngXY":0,"AngYZ":0,"AngXZ":0,"AbsoluteScale":0.6,"AbsoluteX":0,"AbsoluteY":0,"AbsoluteZ":0,"Radius":1,"MinRad":1,"MaxRad":1,"Xcen":1,"Ycen":0,"Zcen":0,"nonconformal":0,"JuliaMode":0,"JuliaX":0,"JuliaY":0,"JuliaZ":0,"CylindricalMOD":0,"CylindricalNegativeMOD":0,"BrotMOD":0,"BrotFreq":1,"fractionary":0,"ColorIterations":16,"UMode":0,"UScale":2,"VMode":0,"VScale":1.113689,"ViewClip":0,"Bounds":3,"StepScale":0.3,"DetailPrecision":0.5,"NormalFilter":2.5},"animation":{"duration":20,"progress":0.8818967296297242}},groups:FORMULA_GROUPS,hidden:typeof FORMULA_HIDDEN_PARAMETERS==="undefined"?[]:FORMULA_HIDDEN_PARAMETERS,reference:REFERENCE_FORMULA_PARAMETERS,phases:referencePhases,upload:uploadFormulaUniforms};})(),
 (()=>{// Formula-owned metadata. Hidden definitions still participate in preset validation.
 const FORMULA_GROUPS={
  '形态与相位':['形态与相位','立方对称、尖刺与倒角。动画由唯一循环位置驱动。',true,[
@@ -1121,7 +1121,7 @@ let presetTransition=null;
 let values={...reference},yaw=0,pitch=.04,distance=8.5,progress=0,playing=true,motion='reference',duration=20,easing='linear',quality=1,dirty=true,ready=false,last=0,fpsTime=0,frameCount=0,recorder=null,recordState=null,referencePreset=true;
 
 const VIEW_STORAGE='uber-bulb-view-v1';let stateSaveTimer=null;
-function saveView(){try{const anim=recordState&&recorder?.state==='recording'?{playing:recordState.playing,progress:recordState.progress}:{playing,progress};sessionStorage.setItem(VIEW_STORAGE,JSON.stringify({version:3,formulaId:activeFormula.id,parameters:values,camera:{yaw,pitch,distance},animation:{motion,duration,easing,...anim},quality,referencePreset}));}catch(_){/* Storage unavailable: rendering and explicit JSON export remain usable. */}}
+function saveView(){try{const anim=recordState&&(recordState.offline||recorder?.state==='recording')?{playing:recordState.playing,progress:recordState.progress}:{playing,progress};sessionStorage.setItem(VIEW_STORAGE,JSON.stringify({version:3,formulaId:activeFormula.id,parameters:values,camera:{yaw,pitch,distance},animation:{motion,duration,easing,...anim},quality,referencePreset}));}catch(_){/* Storage unavailable: rendering and explicit JSON export remain usable. */}}
 function queueViewSave(){if(stateSaveTimer!==null)return;stateSaveTimer=setTimeout(()=>{stateSaveTimer=null;saveView();},250);}
 function restoreView(){try{const raw=sessionStorage.getItem(VIEW_STORAGE);if(!raw||raw.length>100000)return;const saved=JSON.parse(raw);if(![1,2,3].includes(saved.version)||!saved.parameters||!saved.camera||!saved.animation)return;const next={...reference};for(const [key,value]of Object.entries(saved.parameters)){if(!schema.has(key))continue;if(typeof value!=='number'||!Number.isFinite(value))return;const def=schema.get(key),lo=typeof def[2]==='string'?0:def[2],hi=typeof def[2]==='string'?(def[2]==='bool'?1:def[4].length-1):def[3];if(value<lo||value>hi)return;if((typeof def[2]==='string'||['Iterations','ColorIterations'].includes(key))&&!Number.isInteger(value))return;next[key]=value;}const cam=saved.camera,anim=saved.animation;if(next.MinRad>next.MaxRad||!['yaw','pitch','distance'].every(k=>Number.isFinite(cam[k]))||cam.distance<.5||cam.distance>500)return;if(!['reference','spin','loop1','loop2','both','spinloop'].includes(anim.motion)||!Number.isFinite(anim.duration)||anim.duration<1||anim.duration>60||!Number.isFinite(anim.progress)||anim.progress<0||anim.progress>1||!['linear','smooth'].includes(anim.easing)||typeof anim.playing!=='boolean'||![0,1,1.5,2,3].includes(saved.quality))return;values=next;({yaw,pitch,distance}=cam);({motion,duration,progress,easing}=anim);playing=anim.playing;quality=saved.quality;if(saved.version<3){values={...reference};yaw=0;pitch=.04;distance=8.5;duration=20;progress=0;quality=1;}for(const key of LOCKED_PHASES)values[key]=reference[key];motion='reference';easing='linear';playing=true;if(quality===3)quality=1;referencePreset=!!saved.referencePreset;$('motion').value=motion;$('duration').value=duration;$('easing').value=easing;$('uber-quality').value=quality;$('action-status').textContent=saved.version<3?'已恢复提供的参数，自动播放固定双相位动画。':'已恢复视角与参数，自动播放固定双相位动画。';}catch(_){/* Invalid saved data falls back to the supplied reference. */}}
 window.addEventListener('pagehide',saveView);
@@ -1130,10 +1130,10 @@ window.addEventListener('pagehide',saveView);
 
 /* source: src/ui/studio/parameter-bindings.js */
 function initialStudioQuality(){const mobile=navigator.userAgentData?.mobile===true||/Android|iPhone|iPod|Mobile/i.test(navigator.userAgent)||matchMedia('(max-width: 760px) and (pointer: coarse)').matches;return mobile?1.5:2;}
-function restoreStudioOpening(){values={...reference,CameraRoll:activeFormula.profile.camera.roll};({yaw,pitch,distance}=activeFormula.profile.camera);progress=activeFormula.id==='uber-bulb'?(1.695-reference.LoopPI)/(1.695-.129):0;playing=true;motion='reference';duration=20;easing='linear';quality=initialStudioQuality();referencePreset=true;$('duration').value=duration;$('uber-quality').value=quality;$('action-status').textContent='';}
+function restoreStudioOpening(){values={...reference,CameraRoll:activeFormula.profile.camera.roll};({yaw,pitch,distance}=activeFormula.profile.camera);progress=activeFormula.profile.animation?.progress??(activeFormula.id==='uber-bulb'?(1.695-reference.LoopPI)/(1.695-.129):0);playing=true;motion='reference';duration=activeFormula.profile.animation?.duration??20;easing='linear';quality=initialStudioQuality();referencePreset=true;$('duration').value=duration;$('uber-quality').value=quality;$('action-status').textContent='';}
 function updateRangeTrack(input){const span=Number(input.max)-Number(input.min),fraction=span>0?Math.max(0,Math.min(1,(Number(input.value)-Number(input.min))/span)):0;input.style.setProperty("--range-position","calc("+fraction*100+"% + "+(1-2*fraction)+"px)");}
 function sync(){for(const [key,{input,range}] of fields){if(input.type==='checkbox')input.checked=!!values[key];else if(input.type==='color'){input.value=colorHex(values[key]);$('hex-'+key).value=input.value;$('hex-'+key).setAttribute('aria-invalid','false');}else input.value=values[key];if(range){range.value=values[key];updateRangeTrack(range);}}drawLightBall();updatePhaseReadouts();}
-function change(key,value){cancelPresetTransition();if(LOCKED_PHASES.has(key))return;const def=schema.get(key);if(!Number.isFinite(value)){sync();return;}if(typeof def[2]==='string')value=def[2]==='bool'?Number(!!value):Math.max(0,Math.min(def[4].length-1,Math.round(value)));else value=Math.max(def[2],Math.min(def[3],value));if(['Iterations','ColorIterations'].includes(key)||isMaterialColor(key))value=Math.round(value);values[key]=value;if(key==='MinRad'&&values.MinRad>values.MaxRad)values.MaxRad=values.MinRad;if(key==='MaxRad'&&values.MaxRad<values.MinRad)values.MinRad=values.MaxRad;if(key==='AbsoluteScale')distance*=Math.max(.01,fields.get(key).input.dataset.previous||.6)/value;fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;if(key==='LoopPI'||key==='LoopPI2'){playing=false;motion='spin';$('motion').value=motion;progress=0;updateTransport();$('action-status').textContent='已暂停关键帧动画，现在直接调整相位。';}referencePreset=false;sync();dirty=true;}
+function change(key,value){cancelPresetTransition();if(LOCKED_PHASES.has(key))return;const def=schema.get(key);if(!Number.isFinite(value)){sync();return;}if(typeof def[2]==='string')value=def[2]==='bool'?Number(!!value):Math.max(0,Math.min(def[4].length-1,Math.round(value)));else value=Math.max(def[2],Math.min(def[3],value));if(['Iterations','ColorIterations'].includes(key)||isMaterialColor(key)||(activeFormula.graphCompiled&&key.startsWith('gp_')&&def[4]===1))value=Math.round(value);values[key]=value;if(key==='MinRad'&&values.MinRad>values.MaxRad)values.MaxRad=values.MinRad;if(key==='MaxRad'&&values.MaxRad<values.MinRad)values.MinRad=values.MaxRad;if(key==='AbsoluteScale')distance*=Math.max(.01,fields.get(key).input.dataset.previous||.6)/value;fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;if(key==='LoopPI'||key==='LoopPI2'){playing=false;motion='spin';$('motion').value=motion;progress=0;updateTransport();$('action-status').textContent='已暂停关键帧动画，现在直接调整相位。';}referencePreset=false;sync();dirty=true;}
 
 
 function resetParameterGroup(name){
@@ -1177,7 +1177,7 @@ function activateFormula(id,{remember=true}={}){
  $('formula-select').value=id;configurePhaseReadouts();$('reference-toggle').hidden=id!=='uber-bulb';$('reference-panel').hidden=true;gifButton.hidden=id!=='uber-bulb';
  canvas.setAttribute('aria-label',formula.name+' 3D');
  fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;
- loadFormulaDevice();renderBudget.resetSamples();submittedFrame=false;dirty=true;sync();updateTransport();return true;
+ loadFormulaDevice();renderBudget.resetSamples();submittedFrame=false;dirty=true;sync();updateTransport();renderLocalPresets();return true;
 }
 $('formula-select').onchange=e=>{cancelPresetTransition();if(activateFormula(e.target.value)){playing=true;referencePreset=false;updateTransport();}};
 
@@ -1189,10 +1189,10 @@ const PRESET_STORAGE='uber-user-presets-v1';let localPresets=[],selectedPreset=n
 function capturePreset(){return {formulaId:activeFormula.id,parameters:{...values},camera:{yaw,pitch,distance,roll:values.CameraRoll},animation:{duration,progress,playing},quality};}
 function sanitizePreset(state){if(!state||!state.parameters||!state.camera||!state.animation)return null;const formulaId=state.formulaId||'uber-bulb',metadata=presetMetadata(formulaId);if(!metadata)return null;const {schema,reference}=metadata;const p={...reference};for(const [key,value] of Object.entries(state.parameters)){if(!schema.has(key))continue;const def=schema.get(key),lo=typeof def[2]==='string'?0:def[2],hi=typeof def[2]==='string'?(def[2]==='bool'?1:def[4].length-1):def[3];if(!Number.isFinite(value)||value<lo||value>hi)return null;p[key]=value;}if(p.MinRad>p.MaxRad)return null;const c=state.camera,a=state.animation;if(!['yaw','pitch','distance'].every(k=>Number.isFinite(c[k]))||c.distance<.5||c.distance>500||!Number.isFinite(a.duration)||a.duration<1||a.duration>60||!Number.isFinite(a.progress)||a.progress<0||a.progress>1||typeof a.playing!=='boolean'||![0,1,1.5,2,3].includes(state.quality))return null;return {formulaId,parameters:p,camera:{yaw:wrapAngle(c.yaw),pitch:wrapAngle(c.pitch),distance:c.distance,roll:Number.isFinite(c.roll)?wrapAngle(c.roll*Math.PI/180)*180/Math.PI:p.CameraRoll},animation:{duration:a.duration,progress:a.progress,playing:a.playing},quality:state.quality};}
 function persistPresets(){try{localStorage.setItem(PRESET_STORAGE,JSON.stringify({version:1,items:localPresets}));return true;}catch(_){$('preset-status').textContent='浏览器无法写入本地存储，本次打开仍可使用；请导出预设备份。';return false;}}
-function renderLocalPresets(){const list=$('local-preset-list');list.replaceChildren();for(const item of localPresets){const row=document.createElement('div');row.className='saved-preset';const button=document.createElement('button');button.textContent=item.name;button.setAttribute('aria-pressed',String(item.id===selectedPreset));button.onclick=()=>switchLocalPreset(item);const update=document.createElement('button');update.textContent='更新';update.className='preset-update';update.setAttribute('aria-label','更新 '+item.name);update.disabled=!!presetTransition;update.onclick=()=>{if(presetTransition)return;item.state=capturePreset();selectedPreset=item.id;if(persistPresets())$('preset-status').textContent='已用当前画面更新 '+item.name+'。';renderLocalPresets();};const remove=document.createElement('button');remove.textContent='删除';remove.className='preset-remove';remove.setAttribute('aria-label','删除 '+item.name);remove.onclick=()=>{if(presetTransition?.id===item.id)cancelPresetTransition();localPresets=localPresets.filter(p=>p.id!==item.id);if(selectedPreset===item.id)selectedPreset=null;persistPresets();renderLocalPresets();};row.append(button,update,remove);list.append(row);} $('preset-add').disabled=!!presetTransition||localPresets.length>=24;$('preset-empty').hidden=localPresets.length>0;}
+function renderLocalPresets(){const list=$('local-preset-list');list.replaceChildren();for(const item of localPresets){const row=document.createElement('div');row.className='saved-preset';const button=document.createElement('button');button.textContent=item.name;button.setAttribute('aria-pressed',String(item.id===selectedPreset));button.onclick=()=>switchLocalPreset(item);const update=document.createElement('button');update.textContent='更新';update.className='preset-update';update.setAttribute('aria-label','更新 '+item.name);update.disabled=!!presetTransition||!!activeFormula.graphCompiled;update.onclick=()=>{if(activeFormula.graphCompiled){$('preset-status').textContent='自由公式请导出完整公式包；不会覆盖原有预设。';return;}if(presetTransition)return;item.state=capturePreset();selectedPreset=item.id;if(persistPresets())$('preset-status').textContent='已用当前画面更新 '+item.name+'。';renderLocalPresets();};const remove=document.createElement('button');remove.textContent='删除';remove.className='preset-remove';remove.setAttribute('aria-label','删除 '+item.name);remove.onclick=()=>{if(presetTransition?.id===item.id)cancelPresetTransition();localPresets=localPresets.filter(p=>p.id!==item.id);if(selectedPreset===item.id)selectedPreset=null;persistPresets();renderLocalPresets();};row.append(button,update,remove);list.append(row);} $('preset-add').disabled=!!presetTransition||localPresets.length>=24;$('preset-empty').hidden=localPresets.length>0;}
 function cancelPresetTransition(){if(!presetTransition)return;presetTransition=null;renderLocalPresets();$('preset-status').textContent='已停止过渡，保留当前画面。';}
 function mixColor(a,b,t){const aa=colorLinear(a),bb=colorLinear(b);return aa.reduce((packed,x,i)=>{const l=x+(bb[i]-x)*t,s=l<=.0031308?12.92*l:1.055*Math.pow(l,1/2.4)-.055;return packed|(Math.round(Math.max(0,Math.min(1,s))*255)<<(16-i*8));},0);}
-function switchLocalPreset(item){if(recorder?.state==='recording'){$('preset-status').textContent='请先结束录制再切换预设。';return;}const target=sanitizePreset(item.state);if(!target)return;if(!activateFormula(target.formulaId))return;selectedPreset=item.id;playing=true;updateTransport();presetTransition={id:item.id,name:item.name,from:capturePreset(),to:target,start:performance.now()};renderLocalPresets();$('preset-status').textContent='正在切换到 '+item.name+'…';dirty=true;}
+function switchLocalPreset(item){if(recordState?.offline||recorder?.state==='recording'){$('preset-status').textContent='请先结束录制再切换预设。';return;}const target=sanitizePreset(item.state);if(!target)return;if(!activateFormula(target.formulaId))return;selectedPreset=item.id;playing=true;updateTransport();presetTransition={id:item.id,name:item.name,from:capturePreset(),to:target,start:performance.now()};renderLocalPresets();$('preset-status').textContent='正在切换到 '+item.name+'…';dirty=true;}
 function stepPresetTransition(t){const tr=presetTransition;if(!tr)return;const raw=Math.max(0,Math.min(1,(t-tr.start)/800)),f=raw*raw*(3-2*raw),lerp=(a,b)=>a+(b-a)*f,angle=(a,b)=>a+wrapAngle(b-a)*f;
 for(const [key,def] of schema){const a=tr.from.parameters[key],b=tr.to.parameters[key];if(LOCKED_PHASES.has(key)){values[key]=reference[key];continue;}if(isMaterialColor(key))values[key]=mixColor(a,b,f);else if(typeof def[2]==='string')values[key]=f<.5?a:b;else if(['CameraRoll','KeyAzimuth','EnvironmentRotation','AngXY','AngYZ','AngXZ'].includes(key))values[key]=wrapAngle(angle(a*Math.PI/180,b*Math.PI/180))*180/Math.PI;else {values[key]=lerp(a,b);if(['Iterations','ColorIterations'].includes(key))values[key]=Math.round(values[key]);}}
 yaw=angle(tr.from.camera.yaw,tr.to.camera.yaw);pitch=angle(tr.from.camera.pitch,tr.to.camera.pitch);distance=lerp(tr.from.camera.distance,tr.to.camera.distance);duration=lerp(tr.from.animation.duration,tr.to.animation.duration);values.CameraRoll=wrapAngle(angle(tr.from.camera.roll*Math.PI/180,tr.to.camera.roll*Math.PI/180))*180/Math.PI;dirty=true;updateTransport();
@@ -1231,6 +1231,12 @@ async function loadFormulaDevice(){
 }
 async function init(){if(!gl){error('无法启动 WebGL。请使用支持硬件加速的 Chrome 或 Edge。');return;}requestAnimationFrame(frame);await loadFormulaDevice();}
 
+// Video output size and GPU sampling size are different in Ultra (2× SSAA).
+// Material coordinates stay anchored to output pixels across all quality tiers.
+function mp4RenderDimensions(selectedQuality){
+ const output=1440,sampling=selectedQuality===3?2:1,size=output*sampling;
+ return {width:size,height:size,detailHeight:size,mappingHeight:output,nativeFactor:sampling,factor:sampling,shaderQuality:[0,1,1.5,2,3].indexOf(selectedQuality),cameraScale:1.12};
+}
 function draw(forceFull=false){if(!ready)return;const started=performance.now();
 if(!viewportSize.width){const rect=canvas.getBoundingClientRect();viewportSize.width=rect.width;viewportSize.height=rect.height;}
 const rect=viewportSize,nativeFactor=({0:.65,1:1,1.5:1.25,2:1.5,3:2})[quality]*Math.min(devicePixelRatio,quality>=2?2:1.5);
@@ -1265,6 +1271,7 @@ function configurePhaseReadouts(){
 
 /* source: src/ui/studio/render-loop.js */
 function frame(t){
+if(mp4Preparing||recordState?.offline){last=t;requestAnimationFrame(frame);return;}
 if(!ready){const dt=last?(t-last)/1000:0;last=t;if(!document.hidden&&playing){progress=(progress+dt/duration)%1;updateTransport();}requestAnimationFrame(frame);return;}const dt=last?((t-last)/1000):0;last=t;
 if(!document.hidden){
   const adapting=adaptiveRendering&&quality!==3&&moving(t)&&!recordingDimensions;
@@ -1280,7 +1287,7 @@ if(!document.hidden){
     $('render-status').textContent=activeFormula.name+' · '+(playing?fps+' fps':'实时三维')+' · '+percent+'%'+(lastRenderAdaptive&&lastRenderDimensions.shaderQuality<[0,1,1.5,2,3].indexOf(quality)?' · 动态 '+['流畅','标准','细致','精细','超精细 · 静帧'][lastRenderDimensions.shaderQuality]:'');
     $('render-status').title=canvas.width+' × '+canvas.height+(renderBudget.gpuMs?' · GPU '+renderBudget.gpuMs.toFixed(1)+' ms':'');fpsTime=t;frameCount=0;
   }
-  if(recorder?.state==='recording'&&performance.now()-recordState.started>=duration*1000)recorder.stop();
+  if(recorder?.state==='recording'&&performance.now()-recordState.started>=(recordState.duration||duration)*1000)recorder.stop();
 }
 requestAnimationFrame(frame);}
 
@@ -1312,21 +1319,245 @@ $('uber-quality').onchange=e=>{quality=Number(e.target.value);if(quality===3){pl
 
 
 /* source: src/state/studio-camera-input.js */
-function zoom(f){distance=Math.max(.6/values.AbsoluteScale,Math.min(500,(activeFormula.profile.zoomMax||25)/values.AbsoluteScale,distance*f));dirty=true;}canvas.addEventListener('wheel',e=>{cancelPresetTransition();e.preventDefault();zoom(Math.exp(Math.max(-150,Math.min(150,e.deltaY))*.0015));},{passive:false});const pointers=new Map();let pinch=0;canvas.onpointerdown=e=>{cancelPresetTransition();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);if(pointers.size===2){const p=[...pointers.values()];pinch=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);}};canvas.onpointermove=e=>{if(!pointers.has(e.pointerId))return;const old=pointers.get(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);if(pointers.size===2){const p=[...pointers.values()],d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);if(pinch>0&&d>0)zoom(pinch/d);pinch=d;}else{yaw-=(e.clientX-old[0])*.007;pitch=wrapAngle(pitch+(e.clientY-old[1])*.007);dirty=true;}};for(const name of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,e=>{pointers.delete(e.pointerId);pinch=0;});canvas.onkeydown=e=>{cancelPresetTransition();if(e.key.startsWith('Arrow')){e.preventDefault();if(e.key==='ArrowLeft')yaw-=.1;if(e.key==='ArrowRight')yaw+=.1;if(e.key==='ArrowUp')pitch=wrapAngle(pitch+.1);if(e.key==='ArrowDown')pitch=wrapAngle(pitch-.1);dirty=true;}if(e.key==='+'||e.key==='='){e.preventDefault();zoom(.9);}if(e.key==='-'){e.preventDefault();zoom(1.1);}};
+function zoom(f){if(recordState?.offline)return;distance=Math.max(.6/values.AbsoluteScale,Math.min(500,(activeFormula.profile.zoomMax||25)/values.AbsoluteScale,distance*f));dirty=true;}canvas.addEventListener('wheel',e=>{cancelPresetTransition();e.preventDefault();zoom(Math.exp(Math.max(-150,Math.min(150,e.deltaY))*.0015));},{passive:false});const pointers=new Map();let pinch=0;canvas.onpointerdown=e=>{if(recordState?.offline)return;cancelPresetTransition();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);if(pointers.size===2){const p=[...pointers.values()];pinch=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);}};canvas.onpointermove=e=>{if(recordState?.offline)return;if(!pointers.has(e.pointerId))return;const old=pointers.get(e.pointerId);pointers.set(e.pointerId,[e.clientX,e.clientY]);if(pointers.size===2){const p=[...pointers.values()],d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);if(pinch>0&&d>0)zoom(pinch/d);pinch=d;}else{yaw-=(e.clientX-old[0])*.007;pitch=wrapAngle(pitch+(e.clientY-old[1])*.007);dirty=true;}};for(const name of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,e=>{pointers.delete(e.pointerId);pinch=0;});canvas.onkeydown=e=>{if(recordState?.offline)return;cancelPresetTransition();if(e.key.startsWith('Arrow')){e.preventDefault();if(e.key==='ArrowLeft')yaw-=.1;if(e.key==='ArrowRight')yaw+=.1;if(e.key==='ArrowUp')pitch=wrapAngle(pitch+.1);if(e.key==='ArrowDown')pitch=wrapAngle(pitch-.1);dirty=true;}if(e.key==='+'||e.key==='='){e.preventDefault();zoom(.9);}if(e.key==='-'){e.preventDefault();zoom(1.1);}};
+
+
+/* source: src/ui/studio/viewport-capture.js */
+// A fixed 1440-square design space. No DOM geometry, responsive CSS, DPR or zoom.
+function createViewportCapture(size=1440,style={}){
+ const output=document.createElement('canvas');output.width=output.height=size;
+ const ctx=output.getContext('2d',{alpha:false});
+ const accent=style.accent||'#b1ff49',english=style.language==='en';
+ const muted='#aaaaaa',ink='#eeeeee',line='#555555';
+ const family='StudioCode, "Microsoft YaHei", monospace';
+ function text(value,x,y,fontSize=30,color=muted,align='left',maxWidth){
+  ctx.font='400 '+fontSize+'px '+family;
+  if(maxWidth&&ctx.measureText(value).width>maxWidth)ctx.font='400 '+(fontSize*maxWidth/ctx.measureText(value).width)+'px '+family;
+  ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.fillText(value,x,y);
+ }
+ function stroke(points,color=line,width=2){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();}
+ function phase(value,index,spiked){
+  const right=index===1,x=right?1390:54,y=right?914:322;
+  stroke([[x,y],[x,y+214]],line,2);stroke([[x-10,y+70],[x+10,y+70]],accent,3);
+  const start=right?1044:88,end=right?1356:394;
+  text(spiked?'Loop0'+(index+1):index?'LoopPI2':'LoopPI',start,y+32,30);
+  text(spiked&&!index?'deg':'rad',end,y+32,30,muted,'right');
+  const parts=Math.abs(value).toFixed(4).split('.'),whole=(value<0?'-':'+')+parts[0],fraction='.'+parts[1];
+  ctx.font='400 88px '+family;const wholeWidth=ctx.measureText(whole).width;
+  ctx.font='400 46px '+family;const fractionWidth=ctx.measureText(fraction).width;
+  const total=wholeWidth+fractionWidth,available=end-start,shrink=Math.min(1,available/total);
+  const left=right?end-total*shrink:start;
+  text(whole,left,y+136,88*shrink,accent);text(fraction,left+wholeWidth*shrink,y+136,46*shrink,ink);
+  text((index?'φ₂':'φ₁')+' / '+(spiked&&!index?'360°':'2π'),right?end:start,y+200,28,muted,right?'right':'left');
+ }
+ function paint(state){
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#000';ctx.fillRect(0,0,size,size);
+  ctx.save();ctx.scale(size/1440,size/1440);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(canvas,0,0,1440,1440);
+  text(state.formulaName+' · '+state.frame+' / '+state.total+' frames',42,78,30,muted,'left',1350);
+  for(const [label,x]of [['[ ref ]',68],['[ +Y ]',258],['[ −Y ]',438],['[ home ]',618]])text(label,x,162,32,ink);
+  for(const [x,y,sx,sy]of [[820,130,1,1],[856,130,-1,1],[820,166,1,-1],[856,166,-1,-1]])stroke([[x,y+sy*11],[x,y],[x+sx*11,y]],ink,3);
+  phase(state.phases[0],0,state.spiked);phase(state.phases[1],1,state.spiked);
+  text(english?'drag: orbit / wheel: zoom':'拖动旋转 · 滚轮缩放',42,1250,30);
+  const sliderX=42,sliderEnd=326,y=1354,thumb=sliderX+(sliderEnd-sliderX)*state.progress;
+  if(thumb-8>sliderX)stroke([[sliderX,y],[thumb-8,y]],line,2);
+  if(thumb+8<sliderEnd)stroke([[thumb+8,y],[sliderEnd,y]],line,2);
+  stroke([[thumb,y-20],[thumb,y+20]],accent,5);
+  text((state.progress*state.duration).toFixed(2)+' / '+state.duration.toFixed(2)+' s',375,1365,30);
+  text(english?'quality':'画质',680,1365,30);
+  ctx.fillStyle='#101010';ctx.fillRect(840,1316,324,78);
+  text(state.qualityLabel,858,1365,30,muted,'left',264);
+  stroke([[1131,1356],[1140,1365],[1149,1356]],muted,2);
+  ctx.strokeStyle=muted;ctx.lineWidth=2;ctx.strokeRect(1200,1337,32,32);
+  text(english?'adaptive':'自适应',1244,1365,28,muted,'left',166);
+  for(const [x,y,sx,sy]of [[1,7,1,1],[1439,7,-1,1],[1,1439,1,-1],[1439,1439,-1,-1]])stroke([[x,y+sy*18],[x,y],[x+sx*18,y]],muted,1);
+  ctx.restore();
+ }
+ return {canvas:output,paint};
+}
+
+
+/* source: src/state/mp4-muxer.js */
+// Small ISO BMFF muxer for WebCodecs AVC output. One contiguous video chunk,
+// explicit sample timing and signed composition offsets; no wall-clock timing.
+function createAVCMP4(width,height,fps,expectedFrames){
+ const samples=[];let description=null,bytes=0;
+ const ascii=s=>Uint8Array.from(s,c=>c.charCodeAt(0));
+ const u16=n=>new Uint8Array([(n>>>8)&255,n&255]);
+ const u32=n=>new Uint8Array([(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255]);
+ function join(parts){const out=new Uint8Array(parts.reduce((n,p)=>n+p.length,0));let i=0;for(const p of parts){out.set(p,i);i+=p.length;}return out;}
+ const box=(type,...parts)=>{const body=join(parts);return join([u32(body.length+8),ascii(type),body]);};
+ const full=(type,version,flags,...parts)=>box(type,new Uint8Array([version,flags>>>16&255,flags>>>8&255,flags&255]),...parts);
+ const zeros=n=>new Uint8Array(n);
+ const matrix=join([u32(65536),u32(0),u32(0),u32(0),u32(65536),u32(0),u32(0),u32(0),u32(1073741824)]);
+ return {
+  add(chunk,metadata){
+   if(metadata?.decoderConfig?.description){const next=new Uint8Array(metadata.decoderConfig.description);if(description&&(description.length!==next.length||description.some((v,i)=>v!==next[i])))throw Error('AVC configuration changed');description=next.slice();}
+   const data=new Uint8Array(chunk.byteLength);chunk.copyTo(data);bytes+=data.length;
+   if(bytes>1024*1024*1024)throw Error('MP4 exceeds 1 GiB');
+   samples.push({data,key:chunk.type==='key',frame:Math.round(chunk.timestamp*fps/1e6)});
+  },
+  finish(){
+   if(!description||samples.length!==expectedFrames||new Set(samples.map(s=>s.frame)).size!==expectedFrames||samples.some(s=>s.frame<0||s.frame>=expectedFrames))throw Error('Incomplete AVC frames');
+   const count=samples.length,timescale=90000,delta=timescale/fps,duration=count*delta;
+   const ftyp=box('ftyp',ascii('isom'),u32(512),ascii('isomiso2avc1mp41'));
+   function moov(offset){
+    const mvhd=full('mvhd',0,0,zeros(8),u32(timescale),u32(duration),u32(65536),u16(256),zeros(10),matrix,zeros(24),u32(2));
+    const tkhd=full('tkhd',0,7,zeros(8),u32(1),u32(0),u32(duration),zeros(8),zeros(8),matrix,u32(width*65536),u32(height*65536));
+    const mdhd=full('mdhd',0,0,zeros(8),u32(timescale),u32(duration),u16(0x55c4),u16(0));
+    const hdlr=full('hdlr',0,0,u32(0),ascii('vide'),zeros(12),ascii('genle_fractal\0'));
+    const avc1=box('avc1',zeros(6),u16(1),zeros(16),u16(width),u16(height),u32(72*65536),u32(72*65536),u32(0),u16(1),zeros(32),u16(24),u16(65535),box('avcC',description));
+    const stsd=full('stsd',0,0,u32(1),avc1);
+    const stts=full('stts',0,0,u32(1),u32(count),u32(delta));
+    const offsets=samples.map((s,i)=>s.frame*delta-i*delta);
+    const ctts=offsets.some(Boolean)?full('ctts',1,0,u32(count),join(offsets.map(n=>join([u32(1),u32(n)])))):zeros(0);
+    const keys=samples.flatMap((s,i)=>s.key?[u32(i+1)]:[]);
+    const stbl=box('stbl',stsd,stts,ctts,full('stss',0,0,u32(keys.length),join(keys)),full('stsc',0,0,u32(1),u32(1),u32(count),u32(1)),full('stsz',0,0,u32(0),u32(count),join(samples.map(s=>u32(s.data.length)))),full('stco',0,0,u32(1),u32(offset)));
+    const dinf=box('dinf',full('dref',0,0,u32(1),full('url ',0,1)));
+    return box('moov',mvhd,box('trak',tkhd,box('mdia',mdhd,hdlr,box('minf',full('vmhd',0,1,zeros(8)),dinf,stbl))));
+   }
+   const header=moov(0),metadata=moov(ftyp.length+header.length+8);
+   return new Blob([ftyp,metadata,u32(bytes+8),ascii('mdat'),...samples.map(s=>s.data)],{type:'video/mp4'});
+  }
+ };
+}
 
 
 /* source: src/state/studio-recording.js */
-$('record').onclick=()=>{if(!ready)return;if(recorder?.state==='recording'){recorder.stop();return;}const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported(m));if(!mime||!canvas.captureStream){$('action-status').textContent='此浏览器不支持 WebM 录制；可保存图片。';return;}recordState={started:performance.now(),playing,progress};progress=0;playing=true;updateTransport();recordingDimensions=null;draw();recordingDimensions={...lastRenderDimensions};$('snapshot').disabled=true;const stream=canvas.captureStream(30),chunks=[];recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());download(new Blob(chunks,{type:mime}),activeFormula.id+'-loop.webm');playing=recordState.playing;progress=recordState.progress;dirty=true;updateTransport();$('record').textContent='录制一圈 WebM';$('action-status').textContent='录制已保存；流畅程度取决于当前设备的渲染速度。';recorder=null;recordingDimensions=null;$('snapshot').disabled=false;renderBudget.resetSamples();};recorder.onerror=()=>{$('action-status').textContent='录制失败，请降低画质后重试。';};recorder.start();$('record').textContent='结束录制';$('action-status').textContent='正在录制一个 '+duration.toFixed(1)+' 秒循环…';};
+$('record').onclick=()=>{if(!ready||mp4Preparing)return;if(recorder?.state==='recording'){recorder.stop();return;}const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>typeof MediaRecorder!=='undefined'&&MediaRecorder.isTypeSupported(m));if(!mime||!canvas.captureStream){$('action-status').textContent='此浏览器不支持 WebM 录制；可保存图片。';return;}recordState={started:performance.now(),playing,progress};progress=0;playing=true;updateTransport();recordingDimensions=null;draw();recordingDimensions={...lastRenderDimensions};$('snapshot').disabled=true;$('record-mp4').disabled=true;const stream=canvas.captureStream(30),chunks=[];recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());download(new Blob(chunks,{type:mime}),activeFormula.id+'-loop.webm');playing=recordState.playing;progress=recordState.progress;dirty=true;updateTransport();$('record').textContent='录制一圈 WebM';$('action-status').textContent='录制已保存；流畅程度取决于当前设备的渲染速度。';recorder=null;recordingDimensions=null;$('snapshot').disabled=false;$('record-mp4').disabled=false;renderBudget.resetSamples();};recorder.onerror=()=>{$('action-status').textContent='录制失败，请降低画质后重试。';};recorder.start();$('record').textContent='结束录制';$('action-status').textContent='正在录制一个 '+duration.toFixed(1)+' 秒循环…';};
+
+
+const mp4Button=$('record-mp4');let mp4Preparing=false;
+function abortMP4Export(){if(recordState?.offline)recordState.cancelled=true;}
+mp4Button.dataset.codec='webcodecs-avc';
+mp4Button.onclick=async()=>{
+ if(recordState?.offline){abortMP4Export();return;}
+ if(!ready||recorder||mp4Preparing)return;
+ if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined'){
+  $('action-status').textContent=window.isSecureContext?'此浏览器不支持逐帧 H.264 编码，请使用新版 Chrome 或 Edge。':'逐帧导出需要安全连接，请在本机打开 http://127.0.0.1:4177/ 或使用 HTTPS。';return;
+ }
+ mp4Preparing=true;mp4Button.disabled=true;
+ const stage=canvas.closest('.studio-stage');let session,encoder,encodingError;
+ try{
+  const config={codec:'avc1.420029',width:1440,height:1440,framerate:30,bitrate:32000000,latencyMode:'realtime',avc:{format:'avc'}};
+  const supported=await VideoEncoder.isConfigSupported(config);
+  if(!supported.supported)throw Error('此浏览器不支持逐帧 H.264 编码，请使用新版 Chrome 或 Edge。');
+  await document.fonts.load('400 30px StudioCode');await document.fonts.ready;if(!ready||document.hidden)throw Error('MP4 导出失败，请降低画质后重试。');
+  cancelPresetTransition();
+  const fps=30,total=Math.round(duration*fps);
+  session={offline:true,playing,progress,duration,formulaId:activeFormula.id,cancelled:false,controls:[],adaptive:adaptiveRendering};recordState=session;
+  stage.classList.add('mp4-export-square');stage.style.setProperty('--export-width',stage.getBoundingClientRect().width+'px');
+  const rect=canvas.getBoundingClientRect();viewportSize.width=rect.width;viewportSize.height=rect.height;
+  playing=true;adaptiveRendering=false;adaptiveControl.checked=false;
+  recordingDimensions=mp4RenderDimensions(quality);
+  if(recordingDimensions.width>renderBudget.maxDimension)throw Error('GPU export size unsupported');
+  for(const el of document.querySelectorAll('.studio button,.studio input,.studio select')){if(el===mp4Button)continue;session.controls.push([el,el.disabled]);el.disabled=true;}
+  mp4Button.disabled=false;mp4Button.textContent='取消 MP4 导出';
+  mp4Button.dataset.frames='0';mp4Button.dataset.totalFrames=String(total);
+  const capture=createViewportCapture(1440,{accent:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),language:document.documentElement.lang}),muxer=createAVCMP4(1440,1440,fps,total);
+  const exportQualityLabel=$('uber-quality').selectedOptions[0].textContent;
+  encoder=new VideoEncoder({output(chunk,metadata){try{muxer.add(chunk,metadata);}catch(e){encodingError=e;}},error(e){encodingError=e;}});encoder.configure(supported.config);
+  for(let i=0;i<total;i++){
+   // Yield between frames for input/cancel and DOM layout, never for video timing.
+   await new Promise(resolve=>setTimeout(resolve,0));
+   if(session.cancelled)break;
+   if(!ready)throw Error('图形连接已中断，请刷新页面重新启动。');
+   if(encodingError)throw encodingError;
+   progress=i/total;updateTransport();
+   $('render-status').textContent=activeFormula.name+' · '+(quality===3?'ULTRA · 2× SSAA':'Q'+recordingDimensions.shaderQuality)+' · '+(i+1)+' / '+total+' frames';
+   draw();
+   if(lastRenderAdaptive||lastRenderDimensions.width!==recordingDimensions.width||lastRenderDimensions.height!==recordingDimensions.height||lastRenderDimensions.shaderQuality!==recordingDimensions.shaderQuality)throw Error('Export quality mismatch');
+   mp4Button.dataset.renderSize=canvas.width+'×'+canvas.height;mp4Button.dataset.shaderQuality=String(lastRenderDimensions.shaderQuality);mp4Button.dataset.adaptive=String(lastRenderAdaptive);
+   capture.paint({formulaName:activeFormula.name,spiked:activeFormula.id==='spiked-cube',phases:activeFormula.phases(progress,values),frame:i+1,total,progress,duration,qualityLabel:exportQualityLabel});
+   const timestamp=Math.round(i*1e6/fps),frameDuration=Math.round((i+1)*1e6/fps)-timestamp;
+   const videoFrame=new VideoFrame(capture.canvas,{timestamp,duration:frameDuration});
+   try{encoder.encode(videoFrame,{keyFrame:i%60===0});}finally{videoFrame.close();}
+   // Flush bounded batches: renderer/encoder speed only changes elapsed export time.
+   if(i%4===3)await encoder.flush();
+   mp4Button.dataset.frames=String(i+1);mp4Button.dataset.totalFrames=String(total);
+   $('action-status').textContent='逐帧导出 MP4 · '+(i+1)+' / '+total+' · '+Math.round((i+1)/total*100)+'%';
+  }
+  if(!session.cancelled){await encoder.flush();if(encodingError)throw encodingError;download(muxer.finish(),session.formulaId+'-loop-ui-1440.mp4');$('action-status').textContent='MP4 已保存 · H.264 · 1440 × 1440 · 含视窗 UI。';}
+  else $('action-status').textContent='已取消 MP4 导出。';
+ }catch(e){console.error(e);$('action-status').textContent=session?.cancelled?'已取消 MP4 导出。':e.message==='此浏览器不支持逐帧 H.264 编码，请使用新版 Chrome 或 Edge。'?e.message:'MP4 导出失败，请降低画质后重试。';}
+ finally{
+  if(encoder&&encoder.state!=='closed')encoder.close();
+  stage.classList.remove('mp4-export-square');stage.style.removeProperty('--export-width');
+  if(session){playing=session.playing;progress=session.progress;adaptiveRendering=session.adaptive;adaptiveControl.checked=adaptiveRendering;for(const [el,disabled]of session.controls)el.disabled=disabled;}
+  recordState=null;recordingDimensions=null;mp4Preparing=false;mp4Button.disabled=!ready;mp4Button.textContent='导出一圈 MP4';
+  if(!ready)for(const id of ['play','record','snapshot'])$(id).disabled=true;
+  const rect=canvas.getBoundingClientRect();viewportSize.width=rect.width;viewportSize.height=rect.height;
+  last=0;lastDrawTime=-Infinity;submittedFrame=false;dirty=true;renderBudget.resetSamples();updateTransport();
+ }
+};
 
 
 /* source: src/ui/studio/bootstrap.js */
-new ResizeObserver(entries=>{const rect=entries[0].contentRect;viewportSize.width=rect.width;viewportSize.height=rect.height;dirty=true;}).observe(canvas);document.addEventListener('visibilitychange',()=>{last=0;if(document.hidden&&recorder?.state==='recording')recorder.stop();dirty=true;});canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();renderBudget.dispose();if(recorder?.state==='recording')recorder.stop();error('图形连接已中断，请刷新页面重新启动。');});loadLocalPresets();restoreStudioOpening();fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;$('motion').value=motion;sync();updateTransport();init();
+new ResizeObserver(entries=>{const rect=entries[0].contentRect;viewportSize.width=rect.width;viewportSize.height=rect.height;dirty=true;}).observe(canvas);document.addEventListener('visibilitychange',()=>{last=0;if(document.hidden)abortMP4Export();if(document.hidden&&recorder?.state==='recording'){abortMP4Export();recorder.stop();}dirty=true;});canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();abortMP4Export();renderBudget.dispose();if(recorder?.state==='recording'){abortMP4Export();recorder.stop();}error('图形连接已中断，请刷新页面重新启动。');});loadLocalPresets();restoreStudioOpening();fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;$('motion').value=motion;sync();updateTransport();init();
+
+
+/* source: src/ui/studio/graph-adapter.js */
+// Optional graph runtime. Existing formulas and legacy node renderer are unchanged.
+let graphInstallRevision=0,graphTemplatePromise;
+const graphPreviewMode=new URLSearchParams(location.search).get('composer-preview')==='1';
+if(graphPreviewMode){const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href='composer.css';document.head.append(stylesheet);document.documentElement.classList.add('graph-preview');playing=false;quality=1;$('uber-quality').value=quality;sync();updateTransport();}
+function graphEntry(compiled){
+ const base=STUDIO_FORMULAS[0],id='custom-'+compiled.graph.id;
+ const transform=base.groups['旋转与位置'],orbit=base.groups['轨道着色'];
+ const groups={'公开参数':['公开参数','来自自由节点图；完整计算逻辑保存在公式包中。',true,compiled.parameterDefinitions],
+  '旋转与位置':[transform[0],'整个新公式的世界变换。',false,transform[3].filter(d=>['AbsoluteScale','AbsoluteX','AbsoluteY','AbsoluteZ'].includes(d[0]))],
+  '轨道着色':[orbit[0],orbit[1],false,orbit[3].filter(d=>d[0]!=='ColorIterations')]};
+ const visible=new Set(Object.values(groups).flatMap(g=>g[3]).map(d=>d[0]));
+ const hidden=Object.values(base.groups).flatMap(g=>g[3]).filter(d=>!visible.has(d[0]));
+ const cube=compiled.graph.nodes.find(n=>n.id===compiled.graph.output).params.Estimator===1;
+ const entry={id,name:compiled.graph.name,groups,hidden,reference:{...base.reference,AbsoluteScale:1,...Object.fromEntries(compiled.parameterDefinitions.map(d=>[d[0],d[5]]))},profile:{camera:{yaw:.8,pitch:cube?.5:.65,distance:cube?28:10.5,roll:cube?0:-35},parameters:{Bounds:cube?10:4}},graphCompiled:compiled,
+  phases:()=>[0,0],upload(uniform,v){base.upload(uniform,v,0,0);entry.graphCompiled.upload(uniform,v);}};
+ return entry;
+}
+async function installGraphFormula(raw){
+ if(!globalThis.GenleGraph)throw Error('图编译器未加载。');if(!gl)throw Error('WebGL 不可用。');if(recordState?.offline||recorder?.state==='recording')throw Error('请先结束录制。');
+ const revision=++graphInstallRevision,graph=GenleGraph.unpack(raw),compiled=GenleGraph.compile(graph),entry=graphEntry(compiled);
+ const oldEntry=STUDIO_FORMULAS.find(f=>f.id===entry.id),oldDevice=formulaDevices.get(entry.id);
+ if(compiled.uniformNames.length+38>gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS))throw Error('此图超过当前设备的 uniform 预算，请减少参数节点。');
+ let device=oldDevice;
+ if(!oldEntry||oldEntry.graphCompiled.kernel!==compiled.kernel||!device){
+  graphTemplatePromise??=fetch('graph-template.glsl').then(r=>{if(!r.ok)throw Error('无法加载图 shader 模板。');return r.text();});
+  const template=await graphTemplatePromise;if(revision!==graphInstallRevision)return {superseded:true};
+  const source=template.replace(/\/\*__GENLE_GRAPH_KERNEL__\*\/[\s\S]*?vec2 evaluateFormula\(vec3 world\)\{return vec2\(10000\.,0\.\);\}/,compiled.kernel);
+  device=GenleWebGL.createProgram(gl,source,[...FORMULA_UNIFORMS,...compiled.uniformNames,'resolution','detailResolution','mappingResolution','camera','J','M','L','N','T','quality','K0','K1','K2','K3','MG','R','S','ColorA','ColorB','LightKey','LightFill','LightRim']);
+ }
+ if(revision!==graphInstallRevision){if(device!==oldDevice){gl.deleteProgram(device.program);gl.deleteBuffer(device.buffer);}return {superseded:true};}
+ const existing=STUDIO_FORMULAS.findIndex(f=>f.id===entry.id);if(existing<0){STUDIO_FORMULAS.push(entry);const option=document.createElement('option');option.value=entry.id;option.textContent=entry.name;$('formula-select').append(option);}else{STUDIO_FORMULAS[existing]=entry;$('formula-select').querySelectorAll('option').forEach(o=>{if(o.value===entry.id)o.textContent=entry.name;});}
+ ++formulaLoadVersion;formulaDevices.set(entry.id,device);
+ if(activeFormula.id!==entry.id){activateFormula(entry.id);playing=false;progress=0;}
+ else{const previous={...values};activeFormula=entry;groups=studioGroups(entry);renderParameterControls();fields.get('KeyAzimuth').input.closest('details').querySelector('.group-hint').after(lightWidget);values={...reference,...previous};renderDevice=device;program=device.program;locations=device.locations;ready=true;}
+ for(const d of compiled.parameterDefinitions)values[d[0]]=d[5];
+ if(oldDevice&&device!==oldDevice){gl.deleteProgram(oldDevice.program);gl.deleteBuffer(oldDevice.buffer);}
+ $('phase-values').hidden=true;fields.get('AbsoluteScale').input.dataset.previous=values.AbsoluteScale;sync();updateTransport();renderLocalPresets();dirty=true;
+ return {...compiled.diagnostics,formulaId:entry.id};
+}
+globalThis.GenleGraphStudio=Object.freeze({install:installGraphFormula,setQuality(value){if([0,1,1.5,2,3].includes(value)){quality=value;$('uber-quality').value=value;dirty=true;}},view(name){if(name==='reference')$('view-reference').click();else if(name==='top')$('view-top').click();else if(name==='bottom')$('view-bottom').click();},snapshot(){if(ready)$('snapshot').click();},status(){return {ready,formulaId:activeFormula.id,error:$('render-error').hidden?'':$('render-error').textContent};}});
+const graphImport=document.createElement('button');graphImport.type='button';graphImport.textContent='载入公式包';graphImport.title='载入自由节点导出的公式包';graphImport.id='load-graph-formula';$('load-preset').after(graphImport);
+const graphFile=document.createElement('input');graphFile.type='file';graphFile.accept='.json';graphFile.hidden=true;document.body.append(graphFile);graphImport.onclick=()=>graphFile.click();graphFile.onchange=async()=>{const file=graphFile.files[0];if(!file)return;try{if(file.size>500000)throw Error('公式包文件过大。');await installGraphFormula(JSON.parse(await file.text()));$('action-status').textContent='自定义公式已载入；可调整公开参数。';}catch(e){$('action-status').textContent='载入失败：'+e.message;}graphFile.value='';};
+const composerLink=document.createElement('a');composerLink.href='composer.html';composerLink.textContent='[ 自由节点 ]';composerLink.className='composer-link';$('load-preset').parentElement.append(composerLink);
+// Custom graphs are session-local; never put an unresolvable formula ID into
+// legacy preset storage or export a legacy JSON that omits its graph dependency.
+function currentGraphPackage(){const graph=GenleGraph.clone(activeFormula.graphCompiled.graph);for(const p of graph.parameters){const value=values['gp_'+p.id];graph.nodes.find(n=>n.id===p.nodeId).params[p.key]=value;p.defaultValue=value;}return GenleGraph.package(graph);}
+$('save-preset').addEventListener('click',e=>{if(!activeFormula.graphCompiled)return;e.stopImmediatePropagation();download(new Blob([JSON.stringify(currentGraphPackage(),null,2)],{type:'application/json'}),'genle-formula.json');$('action-status').textContent='已导出包含当前公开参数的完整公式包。';},true);
+$('preset-add').addEventListener('click',e=>{if(!activeFormula.graphCompiled)return;e.stopImmediatePropagation();$('preset-status').textContent='自由公式请使用导出 JSON 保存完整公式包；当前仅加载到本次会话。';},true);
+const openGraph=new URLSearchParams(location.search).get('graph-session');if(openGraph){try{const data=sessionStorage.getItem('genle-graph-open-'+openGraph);if(data)installGraphFormula(JSON.parse(data)).catch(e=>{$('action-status').textContent=e.message;});}catch(_){} }
 
 
 /* source: src/ui/studio/i18n-theme.js */
 'use strict';
 (()=>{
 const dictionary={
+'逐帧 H.264 · 1440 × 1440 · 30 fps · 包含视窗 UI':'Frame-by-frame H.264 / 1440 × 1440 / 30 fps / viewport UI',
+'此浏览器不支持逐帧 H.264 编码，请使用新版 Chrome 或 Edge。':'Frame-by-frame H.264 unavailable. Use recent Chrome or Edge.',
+'逐帧导出需要安全连接，请在本机打开 http://127.0.0.1:4177/ 或使用 HTTPS。':'Frame export requires a secure context. Open http://127.0.0.1:4177/ on this computer or use HTTPS.',
+
+'导出一圈 MP4':'export MP4 loop','取消 MP4 导出':'cancel MP4 export','正在导出 MP4 · H.264 · 1:1 · 含视窗 UI…':'exporting MP4 / H.264 / 1:1 / viewport UI','MP4 已保存 · H.264 · 1440 × 1440 · 含视窗 UI。':'MP4 saved / H.264 / 1440 × 1440 / viewport UI','已取消 MP4 导出。':'MP4 export cancelled','MP4 导出失败，请降低画质后重试。':'MP4 export failed. Lower quality and retry.','浏览器不支持 H.264 MP4 录制，请使用新版 Chrome 或 Edge。':'H.264 MP4 recording unavailable. Use a recent Chrome or Edge.','H.264 · 1440 × 1440 · 包含视窗 UI':'H.264 / 1440 × 1440 / viewport UI',
 '文件过大':'file too large','预设格式不符':'invalid preset format','含有无效参数':'invalid parameters','MinRad 不能大于 MaxRad':'MinRad must not exceed MaxRad','动画设置无效':'invalid animation settings','无法启动 WebGL。请使用支持硬件加速的 Chrome 或 Edge。':'Cannot start WebGL. Use Chrome or Edge with hardware acceleration.','渲染启动失败。请刷新或更换支持 WebGL 的浏览器。':'Renderer failed to start. Reload or use a browser that supports WebGL.','图形连接已中断，请刷新页面重新启动。':'Graphics connection lost. Reload to restart.','实时相位读数':'live phase readouts','LoopPI 当前相位':'LoopPI current phase','LoopPI2 当前相位':'LoopPI2 current phase','全屏画面':'fullscreen image','下载全部预设':'download all presets','细致':'enhanced','全部预设已导入。':'all presets imported','预设最多24个':'maximum 24 presets','无法进入全屏；请使用支持全屏的浏览器。':'Fullscreen unavailable. Use a browser that supports fullscreen.','已导入到当前页面；本地存储不可用，请下载备份。':'Imported into this session. Browser storage is unavailable; download a backup.','调整主题色':'adjust theme color','界面主题色':'interface theme','主题色':'theme color','主题色色值':'theme color hex','恢复默认':'reset default','退出全屏':'exit fullscreen','参数':'parameters','我的预设':'presets','实时分形工作室':'real-time fractal studio','恢复参考参数':'reset parameters','对照原始 GIF':'reference GIF','参考视角':'reference view','正俯视':'top view','正仰视':'bottom view','重置视角':'reset view','周期':'cycle','秒':'s','循环位置':'timeline','视图修剪':'view clip','保留全部':'clear clip','画质':'quality','流畅':'draft','标准':'standard','精细':'fine','超精细 · 静帧':'ultra / still','保存图片':'save PNG','录制一圈 WebM':'record WebM','结束录制':'stop recording','播放动画':'play','暂停动画':'pause','回到起点':'rewind','复现依据与当前进度':'implementation notes','导出预设':'export JSON','导入预设':'import JSON','GIF 动画预设':'GIF preset','＋ 添加':'add preset','更新':'update','删除':'delete','预设名称（可选）':'preset name (optional)','预设名称':'preset name','添加当前画面为预设':'save current view as preset','调整画面后，点击＋保存。':'Adjust the view, then press + to save.','仅存此浏览器 · 切换以0.8秒缓入缓出过渡 · 动画持续播放':'browser storage / 0.8 s transition / continuous animation',
 '拖动旋转 · 滚轮缩放':'drag: orbit / wheel: zoom','GIF 参数预设 · 双材质混合':'GIF formula / dual materials','正在启动三维渲染…':'initializing renderer…','原始 GIF · 360 × 360 · 4.8 秒':'reference GIF / 360 × 360 / 4.8 s','实时生成 · GIF 参数预设':'live render / GIF preset','三维渲染不可用':'renderer unavailable','主光方向':'key light direction','恢复参考打光':'reset lighting','拖动球体环绕光源 · 可转至背面':'drag to orbit light / front and back',
 '已停止过渡，保留当前画面。':'transition stopped / current view retained','请先结束录制再切换预设。':'Stop recording before switching presets.','浏览器无法写入本地存储，本次打开仍可使用；请导出预设备份。':'Browser storage unavailable. Export JSON to keep your presets.','当前视角已保存。':'current view saved','预设已载入。':'preset loaded','自适应':'adaptive','动态画面优先降低渲染档位、保留清晰度；暂停和保存 PNG 时恢复所选画质。':'Prefer a lighter rendering tier while moving; pause or save PNG for the selected full quality.','自适应渲染已开启。':'Adaptive rendering enabled.','已固定为完整渲染精度。':'Full rendering resolution enabled.','画质已切换。':'quality updated','超精细：两倍分辨率超采样，已暂停动画；生成速度取决于设备。':'ultra / 2× resolution / animation paused / speed depends on device','此浏览器不支持 WebM 录制；可保存图片。':'WebM recording unavailable in this browser. Save a PNG instead.','录制已保存；流畅程度取决于当前设备的渲染速度。':'recording saved / frame rate depends on device','录制失败，请降低画质后重试。':'Recording failed. Lower quality and try again.','向右滑动，切掉镜头前方遮挡；修剪方向随视角变化。':'Slide right to remove foreground geometry. Clipping follows the view.',
@@ -1366,7 +1597,7 @@ let lang='zh';try{lang=localStorage.getItem('genle-fractal-language')==='en'?'en
 const originals=new WeakMap(),attributes=new WeakMap();
 function translate(s){
  if(dictionary[s])return dictionary[s];
- let m;if((m=s.match(/^重置 (.*)$/)))return 'reset '+(groupMap[m[1]]||m[1]);if((m=s.match(/^Loop0([12]) 当前相位$/)))return 'Loop0'+m[1]+' current phase';if((m=s.match(/^(.*) 超出范围$/)))return m[1]+' is out of range';if((m=s.match(/^(.*) 必须是整数$/)))return m[1]+' must be an integer';
+ let m;if((m=s.match(/^逐帧导出 MP4 · (\d+) \/ (\d+) · (\d+)%$/)))return 'exporting frames / '+m[1]+' / '+m[2]+' / '+m[3]+'%';if((m=s.match(/^重置 (.*)$/)))return 'reset '+(groupMap[m[1]]||m[1]);if((m=s.match(/^Loop0([12]) 当前相位$/)))return 'Loop0'+m[1]+' current phase';if((m=s.match(/^(.*) 超出范围$/)))return m[1]+' is out of range';if((m=s.match(/^(.*) 必须是整数$/)))return m[1]+' must be an integer';
  if((m=s.match(/^已用当前画面更新 (.*)。$/)))return 'updated / '+m[1];
  if((m=s.match(/^已保存 (.*)，仅存储在此浏览器。$/)))return 'saved / '+m[1]+' / this browser only';
  if((m=s.match(/^正在切换到 (.*)…$/)))return 'switching / '+m[1]+'…';
@@ -1386,6 +1617,7 @@ function localizeNode(node){
   const trimmed=rec.source.trim();let result=lang==='en'?translate(trimmed):trimmed;
   if(p.tagName==='BUTTON'){
    if(p.id==='play')result=trimmed==='暂停动画'?'||':'>';
+   else if(p.id==='record-mp4')result=trimmed==='取消 MP4 导出'?'[ cancel ]':'[ mp4 ]';
    else if(p.id==='record')result=trimmed==='结束录制'?'[ stop ]':'[ webm ]';
    else if(p.classList.contains('preset-update'))result='[=]';
    else if(p.classList.contains('preset-remove'))result='×';
